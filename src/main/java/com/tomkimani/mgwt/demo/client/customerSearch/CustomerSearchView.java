@@ -65,8 +65,8 @@ public class CustomerSearchView extends BaseView implements ICustomerSearchView{
 			public void onChange(ChangeEvent event) {
 				String value=mListBox.getItemText(mListBox.getSelectedIndex());
 				entry.setWidget(value,custInput);
-				selectedValue = mListBox.getValue(mListBox.getSelectedIndex());
 				
+				selectedValue = mListBox.getValue(mListBox.getSelectedIndex());
 				if(selectedValue.equals("phone")){
 					custInput.getElement().getFirstChildElement().setAttribute("type","number");
 				}else{

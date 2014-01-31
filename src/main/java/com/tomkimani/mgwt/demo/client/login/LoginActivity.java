@@ -14,6 +14,9 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.event.shared.EventBus;
 import com.googlecode.gwtphonegap.client.PhoneGap;
+import com.googlecode.gwtphonegap.client.event.MenuButtonPressedEvent;
+import com.googlecode.gwtphonegap.client.event.MenuButtonPressedHandler;
+import com.googlecode.gwtphonegap.client.notification.ConfirmCallback;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
 import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
@@ -37,6 +40,7 @@ public class LoginActivity extends MGWTAbstractActivity {
 	public static String loggedUserGroup;
 	public static String loggedUserId;
 	public static String loggedUserName;
+	private ConfirmCallback ipChangeCallback;
 
 	public interface ILoginView extends IsWidget {
 		HasTapHandlers getLoginButton();
@@ -50,6 +54,10 @@ public class LoginActivity extends MGWTAbstractActivity {
 		void showBusy(boolean status);
 
 		MTextBox getServerAddress();
+
+		HasTapHandlers getSaveButton();
+
+		void showIpChange(boolean status);
 	}
 
 	public LoginActivity(ClientFactory factory) {
@@ -66,6 +74,7 @@ public class LoginActivity extends MGWTAbstractActivity {
 		beanFactory = GWT.create(MyBeanFactory.class);
 
 		view.getServerAddress().setValue(MyRequestBuilder.serverAddress);
+		
 
 		// Add Tap Handler for Login
 		addHandlerRegistration(view.getLoginButton().addTapHandler(
@@ -77,13 +86,6 @@ public class LoginActivity extends MGWTAbstractActivity {
 						String password = view.getpassword();
 						String imeiCode = PioneerAppEntryPoint.deviceImei;
 
-						// view.getServerAddress().getValue();
-						//String serverAddress = "197.248.2.44:8030";
-						//String serverAddress = "192.168.43.66";
-						//String serverAddress = "192.168.0.106";
-						String serverAddress = "localhost";
-						MyRequestBuilder.setServerAddress(serverAddress);
-
 						if ((!userName.isEmpty()) && (!password.isEmpty())) {
 							performLogin(userName, password, imeiCode);
 						} else {
@@ -93,6 +95,31 @@ public class LoginActivity extends MGWTAbstractActivity {
 						}
 					}
 				}));
+		
+		addHandlerRegistration(view.getSaveButton().addTapHandler(new TapHandler() {
+			
+			@Override
+			public void onTap(TapEvent event) {
+				String serverAddress = view.getServerAddress().getValue();
+				MyRequestBuilder.setServerAddress(serverAddress);
+				view.showIpChange(false);
+			}
+		}));
+		
+		factory.getPhonegap().getEvent().getMenuButton().addMenuButtonPressedHandler(new MenuButtonPressedHandler() {
+			private boolean isShown = true;
+			@Override
+			public void onMenuButtonPressed(MenuButtonPressedEvent event) {
+					if(isShown){
+					view.showIpChange(true);
+					isShown=false;
+					}else{
+					view.showIpChange(false);
+					isShown=true;	
+					}
+			}
+		});
+
 	}
 
 	private void performLogin(String userName, String password, String imeiCode) {
@@ -110,6 +137,7 @@ public class LoginActivity extends MGWTAbstractActivity {
 		try {
 			Request request = rqs.getBuilder().sendRequest(postData,
 					new MyRequestCallback() {
+
 						public void onResponseReceived(Request request,
 								Response response) {
 							view.showBusy(false);
@@ -136,17 +164,19 @@ public class LoginActivity extends MGWTAbstractActivity {
 								}
 
 							} else {
-								 MyDialogs.alert(
+								 MyDialogs.confirm(
 					       			  		MyDialogs.NETWORK_ERROR_TITLE,
-					       			  		MyDialogs.NETWORK_ERROR_MESSAGE
+					       			  		MyDialogs.NETWORK_ERROR_MESSAGE,
+					       			  		ipChangeCallback
 											);
 							}
 						}
 					});
 		} catch (RequestException e) {
-			 MyDialogs.alert(
+			 MyDialogs.confirm(
     			  		MyDialogs.NETWORK_ERROR_TITLE,
-    			  		MyDialogs.NETWORK_ERROR_MESSAGE
+    			  		MyDialogs.NETWORK_ERROR_MESSAGE,
+    			  		ipChangeCallback
 						);
 		}
 

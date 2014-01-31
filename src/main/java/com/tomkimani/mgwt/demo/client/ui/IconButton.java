@@ -7,13 +7,16 @@ import com.tomkimani.mgwt.demo.client.css.ButtonsCss;
 public class IconButton extends Button {
 	private String text;
 	private String  icon;
+	private String txt="";
 	public IconButton() {
 		super((ButtonsCss) MGWTStyle.getTheme().getMGWTClientBundle().getButtonCss());
 	}
 	
 	public IconButton(String icon,String text){
 		String icn ="<i class='mgwt-Button-icon "+icon+"'></i>";
-		String txt ="<span class='text'>"+text+"</span>";
+		if(text!=null){
+			txt ="<span class='text'>"+text+"</span>";
+		}
 		getElement().setInnerHTML(icn+txt);
 	}
 	
@@ -30,7 +33,11 @@ public class IconButton extends Button {
 	}
 	
 	public void setIcon(String style){
-		 addStyleName(((ButtonsCss)css).IconButton());
+		 addStyleName(((ButtonsCss)css).IconButton()); //".gwt-button"
 		 this.icon=style;
+	}
+	
+	public void removeMinWidth() {
+		addStyleName(((ButtonsCss)css).NoWidth());
 	}
  }

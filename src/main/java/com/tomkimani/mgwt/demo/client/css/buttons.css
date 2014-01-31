@@ -10,6 +10,9 @@
 	text-align: center;
 }
 
+.no-width{
+	min-width:0px;
+}
 .mgwt-Button-icon{
 	display: block;
 }

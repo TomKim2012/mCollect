@@ -20,7 +20,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.googlecode.gwtphonegap.client.PhoneGap;
 import com.googlecode.gwtphonegap.client.PhoneGapAvailableEvent;
@@ -120,8 +119,7 @@ public class PioneerAppEntryPoint implements EntryPoint {
 			
 			@Override
 			public void onPause(PauseEvent event) {
-				LoginActivity.loggedUserId = null;
-				
+				//LoginActivity.loggedUserId = null;
 			}
 		});
 
@@ -137,8 +135,9 @@ public class PioneerAppEntryPoint implements EntryPoint {
 
 			@Override
 			public void onUncaughtException(Throwable e) {
-				//TODO put in your own meaninful handler
-				//Window.alert("uncaught: " + e.getMessage());
+				MyDialogs.alert("Problem","The Application encountered a Problem. Please Restart");
+				
+				//TODO send Notification to administrator
 				e.printStackTrace();
 
 			}
