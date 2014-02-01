@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
 import com.googlecode.mgwt.ui.client.widget.LayoutPanel;
 import com.googlecode.mgwt.ui.client.widget.ScrollPanel;
+import com.handsrel.localstorage.client.LdbQueryBrowser;
 import com.tomkimani.mgwt.demo.client.base.BaseView;
 import com.tomkimani.mgwt.demo.client.dashboard.DashboardActivity.IDashboardView;
 import com.tomkimani.mgwt.demo.client.login.LoginActivity;
@@ -49,6 +50,10 @@ public class DashboardView extends BaseView implements IDashboardView{
 		dashboadPanel.add(widget);
 		ScrollPanel scroller = new ScrollPanel();
 		scroller.add(dashboadPanel);
+		
+		
+//		LdbQueryBrowser lqb = new LdbQueryBrowser();
+//		dashboadPanel.add(lqb); // or add it to any other place
 		
 		createContent(scroller);
 		setButtonBar();

@@ -19,6 +19,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
+import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.googlecode.gwtphonegap.client.PhoneGap;
@@ -35,6 +36,8 @@ import com.googlecode.mgwt.ui.client.MGWTSettings;
 import com.googlecode.mgwt.ui.client.MGWTSettings.ViewPort;
 import com.googlecode.mgwt.ui.client.MGWTSettings.ViewPort.DENSITY;
 import com.googlecode.mgwt.ui.client.MGWTStyle;
+import com.handsrel.localstorage.client.LdbApi;
+import com.handsrel.localstorage.client.LocalStorageDatabaseException;
 import com.tomkimani.mgwt.demo.client.css.MyColorTheme;
 import com.tomkimani.mgwt.demo.client.login.LoginActivity;
 import com.tomkimani.mgwt.demo.client.places.LoginPlace;
@@ -87,6 +90,18 @@ public class PioneerAppEntryPoint implements EntryPoint {
 		PhoneActivityMapper appActivityMapper = new PhoneActivityMapper(clientFactory);
 		PhoneAnimationMapper appAnimationMapper = new PhoneAnimationMapper();
 		AnimatingActivityManager activityManager = new AnimatingActivityManager(appActivityMapper, appAnimationMapper, clientFactory.getEventBus());
+		
+		try {
+	        Storage storage = Storage.getLocalStorageIfSupported();
+	        if (storage==null)
+	             throw new LocalStorageDatabaseException("Local storage not supported in the browser");
+	        else {
+	             //LdbApi.initialize(storage);
+	        }
+		} catch (LocalStorageDatabaseException e) {
+		        e.printStackTrace();
+		        //catch the exception and display on browser etc.
+		}
 		
 		//PhoneGap
 		final PhoneGap phoneGap = GWT.create(PhoneGap.class);

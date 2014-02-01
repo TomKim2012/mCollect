@@ -8,5 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="lib" path="F:/Projects/Java Jars/gwtphonegap-2.4.0.0.jar"/>
+	<classpathentry kind="lib" path="F:/Projects/Pioneer FSA/gwt-localstorage/gwt-localstorage-db-1.0.jar"/>
 	<classpathentry kind="output" path="src/main/webapp/WEB-INF/classes"/>
 </classpath>

@@ -13,6 +13,7 @@
 	
 	<!-- uncomment this if you want to use gwt phonegap -->
 	<inherits name="com.googlecode.gwtphonegap.PhoneGap"/>
+	<inherits name='com.handsrel.localstorage.Localstorage' />
 	<!-- <inherits name="com.github.gwtbootstrap.Bootstrap" /> -->
 		
 	<!-- set the user agent to safari -> only webkit -->
