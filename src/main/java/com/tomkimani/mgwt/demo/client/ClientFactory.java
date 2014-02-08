@@ -19,6 +19,7 @@ import com.google.gwt.place.shared.PlaceController;
 import com.google.web.bindery.event.shared.EventBus;
 import com.googlecode.gwtphonegap.client.PhoneGap;
 import com.tomkimani.mgwt.demo.client.SearchResults.SearchResultsActivity.ISearchResultsView;
+import com.tomkimani.mgwt.demo.client.contacts.ContactActivity.IContactsView;
 import com.tomkimani.mgwt.demo.client.customerSearch.CustomerSearchActivity.ICustomerSearchView;
 import com.tomkimani.mgwt.demo.client.dashboard.DashboardActivity.IDashboardView;
 import com.tomkimani.mgwt.demo.client.login.LoginActivity.ILoginView;
@@ -50,6 +51,8 @@ public interface ClientFactory {
 	void setPhonegap(PhoneGap phonegap);
 	
 	PhoneGap getPhonegap();
+
+	public IContactsView getContactDisplay();
 	
 
 }

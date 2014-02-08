@@ -51,7 +51,7 @@ public class DashboardView extends BaseView implements IDashboardView{
 		scroller.add(dashboadPanel);
 		
 		createContent(scroller);
-		setButtonBar();
+		setButtonBar();//Displays Active Icons
 	}
 	
 	@Override

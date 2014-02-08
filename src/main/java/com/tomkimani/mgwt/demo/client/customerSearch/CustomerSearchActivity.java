@@ -132,7 +132,17 @@ public class CustomerSearchActivity extends BaseActivity {
 			String getIdNo();
 			String getMobileNo();
 			String getCustomerId();
+			String getFullNames();
+			
+			public void setRefNo(String value);
+			public void setFirstName(String value);
+			public void setLastName(String value);
+			public void setIdNo(String value);
+			public void setMobileNo(String value);
+			public void setCustomerId(String value);
+			public void setFullNames(String value);
 		}
+		
 		
 		public interface CustomerList{
 			List<Customer> getCustomerList();

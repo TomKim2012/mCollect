@@ -7,6 +7,7 @@ import com.googlecode.mgwt.ui.client.theme.base.HeaderCss;
 import com.googlecode.mgwt.ui.client.theme.base.InputCss;
 import com.googlecode.mgwt.ui.client.theme.base.ListCss;
 import com.googlecode.mgwt.ui.client.theme.base.MGWTClientBundleBaseThemeDesktop;
+import com.googlecode.mgwt.ui.client.theme.base.MSearchBoxCss;
 import com.googlecode.mgwt.ui.client.theme.base.MainCss;
 import com.googlecode.mgwt.ui.client.theme.base.TabBarCss;
 
@@ -56,6 +57,10 @@ public interface MyClientBundle extends MGWTClientBundleBaseThemeDesktop{
 	@Override
 	@Source({ "com/googlecode/mgwt/ui/client/theme/base/css/dialog.css", "com/googlecode/mgwt/ui/client/theme/base/css/android/dialog.css" })
 	DialogCss getDialogCss();
+	
+	@Override
+	@Source({ "searchbox.css", "com/googlecode/mgwt/ui/client/theme/base/css/android/searchbox.css" })
+	MSearchBoxCss getSearchBoxCss();
 	
 	
 	/*@Source({"fontawesome/font-awesome.css"})

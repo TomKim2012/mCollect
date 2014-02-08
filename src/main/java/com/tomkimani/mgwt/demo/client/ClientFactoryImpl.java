@@ -21,6 +21,8 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 import com.googlecode.gwtphonegap.client.PhoneGap;
 import com.tomkimani.mgwt.demo.client.SearchResults.SearchResultsActivity.ISearchResultsView;
 import com.tomkimani.mgwt.demo.client.SearchResults.SearchResultsView;
+import com.tomkimani.mgwt.demo.client.contacts.ContactActivity.IContactsView;
+import com.tomkimani.mgwt.demo.client.contacts.ContactView;
 import com.tomkimani.mgwt.demo.client.customerSearch.CustomerSearchActivity.ICustomerSearchView;
 import com.tomkimani.mgwt.demo.client.customerSearch.CustomerSearchView;
 import com.tomkimani.mgwt.demo.client.dashboard.DashboardActivity.IDashboardView;
@@ -43,6 +45,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private EventBus eventBus;
 	private PlaceController placeController;
 	private PhoneGap phonegap;
+	private IContactsView contactDisplay;
 
 	public ClientFactoryImpl() {
 		eventBus = new SimpleEventBus();
@@ -101,5 +104,13 @@ public class ClientFactoryImpl implements ClientFactory {
 	@Override
 	public PhoneGap getPhonegap() {
 		return this.phonegap;
+	}
+
+	@Override
+	public IContactsView getContactDisplay() {
+		if (contactDisplay == null) {
+			contactDisplay = new ContactView();
+		}
+		return contactDisplay;
 	}
 }

@@ -17,15 +17,17 @@ import com.googlecode.gwtphonegap.client.notification.ConfirmCallback;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
 import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
+import com.googlecode.mgwt.ui.client.widget.MTextBox;
 import com.googlecode.mgwt.ui.client.widget.ProgressIndicator;
 import com.tomkimani.mgwt.demo.client.ClientFactory;
 import com.tomkimani.mgwt.demo.client.MyBeanFactory;
 import com.tomkimani.mgwt.demo.client.MyDialogs;
 import com.tomkimani.mgwt.demo.client.MyRequestBuilder;
 import com.tomkimani.mgwt.demo.client.MyRequestCallback;
+import com.tomkimani.mgwt.demo.client.PioneerAppEntryPoint;
 import com.tomkimani.mgwt.demo.client.base.BaseActivity;
 import com.tomkimani.mgwt.demo.client.customerSearch.CustomerSearchActivity.Customer;
-import com.tomkimani.mgwt.demo.client.places.CustomerSearchPlace;
+import com.tomkimani.mgwt.demo.client.places.ContactPlace;
 import com.tomkimani.mgwt.demo.client.places.DashboardPlace;
 import com.tomkimani.mgwt.demo.client.places.TransactionDetailPlace;
 import com.tomkimani.mgwt.demo.client.places.TransactionsPlace;
@@ -35,7 +37,8 @@ public class TransactionDetailActivity extends BaseActivity {
 		private ITransactionDetailView view;
 		private MyBeanFactory beanFactory;
 		private Boolean isMiniStatement=false;
-		//private Logger log = Logger.getLogger(getClass().getName());
+		private boolean iscustEdited = false;
+		private String newMobile;
 		
 		public interface ITransactionDetailView extends IView{
 			public HasTapHandlers getBackButton();
@@ -43,6 +46,9 @@ public class TransactionDetailActivity extends BaseActivity {
 			HasTapHandlers getSaveButton();
 			String getAmountTextBox();
 			ProgressIndicator getProgressIndicator();
+			HasTapHandlers getEditButton();
+			void enableEdit(boolean status);
+			MTextBox getInputMobile();
 			
 		}
 		public TransactionDetailActivity(ClientFactory factory) {
@@ -67,7 +73,6 @@ public class TransactionDetailActivity extends BaseActivity {
 				final Customer cust1 = transactionDetailPlace.getCustomer();
 				isMiniStatement = transactionDetailPlace.getIsMiniStatement();
 				
-				System.out.println(cust1.getLastName());
 				
 				if(!(cust1 == null)){
 					if(isMiniStatement){
@@ -77,13 +82,16 @@ public class TransactionDetailActivity extends BaseActivity {
 						addHandlerRegistration(view.getSaveButton().addTapHandler(new TapHandler() {
 							@Override
 							public void onTap(TapEvent event) {
-								MyDialogs.confirm("Confirm", "Send Mini-Statement to "+cust1.getFirstName()+" "+cust1.getLastName(),
+								checkMobile(cust1.getMobileNo());
+								
+								MyDialogs.confirm("Confirm", "Send Mini-Statement to "+TransactionDetailView.customNames+
+										" - " +cust1.getMobileNo(),
 										new ConfirmCallback() {
 											@Override
 											public void onConfirm(int button) {
 												if(button == 1){
 												view.getProgressIndicator().setVisible(true);
-												performTransaction(cust1.getCustomerId());
+													performTransaction(cust1,iscustEdited);
 												}
 											}
 										});
@@ -94,7 +102,7 @@ public class TransactionDetailActivity extends BaseActivity {
 							
 							@Override
 							public void onTap(TapEvent event) {
-								factory.getPlaceController().goTo(new CustomerSearchPlace());
+								factory.getPlaceController().goTo(new ContactPlace());
 							}
 						}));
 						
@@ -105,7 +113,7 @@ public class TransactionDetailActivity extends BaseActivity {
 						@Override
 						public void onConfirm(int button) {
 							if(button==1){	
-							performTransaction(view.getAmountTextBox(),cust1.getCustomerId());
+									performTransaction(view.getAmountTextBox(),cust1,iscustEdited);
 							}
 						}
 						
@@ -114,18 +122,46 @@ public class TransactionDetailActivity extends BaseActivity {
 					addHandlerRegistration(view.getSaveButton().addTapHandler(new TapHandler() {
 						@Override
 						public void onTap(TapEvent event) {
+							checkMobile(cust1.getMobileNo());
+							
 							if(view.getAmountTextBox().isEmpty()){
 								MyDialogs.alert("Error", "Please Enter a valid Amount");
 								return;
 							}
+
 							MyDialogs.confirm("Confirm", "Deposit Ksh "+view.getAmountTextBox()+" to "+
-											cust1.getFirstName()+" "+cust1.getLastName(),confirmBack);
+									 			TransactionDetailView.customNames + " - " +cust1.getMobileNo(),
+									 			confirmBack);
 						}
 					}));
 					addHandlerRegistration(view.getBackButton().addTapHandler(new TapHandler() {
 						@Override
 						public void onTap(TapEvent event) {
-							factory.getPlaceController().goTo(new CustomerSearchPlace());
+							factory.getPlaceController().goTo(new ContactPlace());
+						}
+					}));
+					
+					addHandlerRegistration(view.getEditButton().addTapHandler(new TapHandler() {
+						boolean isEditClicked = true;
+						
+						@Override
+						public void onTap(TapEvent event) {
+							PioneerAppEntryPoint.consoleLog("Cust Edited Before >>>"+iscustEdited);
+							if(isEditClicked){
+								view.enableEdit(true);
+								isEditClicked=false;
+							}else{
+								view.enableEdit(false);
+								isEditClicked=true;
+								
+								if(!view.getInputMobile().getValue().isEmpty()){
+									newMobile =	view.getInputMobile().getValue();
+									cust1.setMobileNo(newMobile);
+									iscustEdited=true;
+								}
+							}
+							
+							PioneerAppEntryPoint.consoleLog("Cust Edited After>>"+iscustEdited);
 						}
 					}));
 				  
@@ -138,13 +174,25 @@ public class TransactionDetailActivity extends BaseActivity {
 		}
 		
 		
-		private void performTransaction(String Amount, String CustomerId) {
+		public void checkMobile(String mobileNo) {
+			if(mobileNo.isEmpty()){
+				MyDialogs.alert("Warning", "The customer has no Mobile Number in Record. Please Update.");
+				return;
+			}
+			
+		}
+
+		private void performTransaction(String Amount, Customer cust, boolean iscustEdited) {
 			  view.showBusy(true);
 			  String customUrl="transactions";
+			  PioneerAppEntryPoint.consoleLog("Cust Edited when sending to server>>"+iscustEdited);
 			  
-			  JSONObject jrequest = new JSONObject(); jrequest.put("customerId", new JSONString(CustomerId));
+			  JSONObject jrequest = new JSONObject(); jrequest.put("customerId", new JSONString(cust.getCustomerId()));
 			  jrequest.put("transaction_amount", new JSONString(Amount));
 			  jrequest.put("transaction_type", new JSONString("Deposit"));
+			  if(iscustEdited){
+				  jrequest.put("newMobile", new JSONString(newMobile));
+			  }
 			  String postData = jrequest.toString();
 			 
 
@@ -205,11 +253,14 @@ public class TransactionDetailActivity extends BaseActivity {
 			MyDialogs.alert("Transaction Success", "Sent. Wait for response");
 		}
 
-		private void performTransaction(String customerId) {
+		private void performTransaction(Customer cust1, boolean iscustEdited) {
 			  String customUrl="custTransactions";
 			  
 			  JSONObject jrequest = new JSONObject();
-			  jrequest.put("clCode", new JSONString(customerId));
+			  jrequest.put("clCode", new JSONString(cust1.getCustomerId()));
+			  if(iscustEdited){
+				  jrequest.put("newMobile", new JSONString(newMobile));
+			  }
 			  String postData = jrequest.toString();
 		
 			MyRequestBuilder rqs = new MyRequestBuilder(RequestBuilder.POST, customUrl);

@@ -36,7 +36,6 @@ import com.googlecode.mgwt.ui.client.MGWTSettings.ViewPort;
 import com.googlecode.mgwt.ui.client.MGWTSettings.ViewPort.DENSITY;
 import com.googlecode.mgwt.ui.client.MGWTStyle;
 import com.tomkimani.mgwt.demo.client.css.MyColorTheme;
-import com.tomkimani.mgwt.demo.client.login.LoginActivity;
 import com.tomkimani.mgwt.demo.client.places.LoginPlace;
 
 /**
@@ -49,82 +48,91 @@ public class PioneerAppEntryPoint implements EntryPoint {
 	public static String deviceImei;
 
 	private void start() {
-		//ViewPort
+		// ViewPort
 		ViewPort viewPort = new MGWTSettings.ViewPort();
-	    viewPort.setTargetDensity(DENSITY.MEDIUM);
-	    viewPort.setUserScaleAble(false).setMinimumScale(1.0).setMinimumScale(1.0).setMaximumScale(1.0);
-		
-		
-		//set viewport and other settings for mobile
+		viewPort.setTargetDensity(DENSITY.MEDIUM);
+		viewPort.setUserScaleAble(false).setMinimumScale(1.0)
+				.setMinimumScale(1.0).setMaximumScale(1.0);
+
+		// set viewport and other settings for mobile
 		MGWTSettings settings = new MGWTSettings();
-	    settings.setViewPort(viewPort);
-	    settings.setIconUrl("logo.png");
-	    settings.setAddGlosToIcon(true);
-	    settings.setFullscreen(true);
-	    settings.setPreventScrolling(true);
-	    
-	   //Sets the default theme
-	    MGWTStyle.setTheme(new MyColorTheme());
-		
-	    MGWT.applySettings(settings);
-	    
-	    final ClientFactory clientFactory = new ClientFactoryImpl();
+		settings.setViewPort(viewPort);
+		settings.setIconUrl("logo.png");
+		settings.setAddGlosToIcon(true);
+		settings.setFullscreen(true);
+		settings.setPreventScrolling(true);
+
+		// Sets the default theme
+		MGWTStyle.setTheme(new MyColorTheme());
+
+		MGWT.applySettings(settings);
+
+		final ClientFactory clientFactory = new ClientFactoryImpl();
 		createPhoneDisplay(clientFactory);
-		
+
 		// Start PlaceHistoryHandler with our PlaceHistoryMapper
-		AppPlaceHistoryMapper historyMapper = GWT.create(AppPlaceHistoryMapper.class);
-		
-		final PlaceHistoryHandler historyHandler = new PlaceHistoryHandler(historyMapper);
-		historyHandler.register(clientFactory.getPlaceController(), clientFactory.getEventBus(), new LoginPlace());
+		AppPlaceHistoryMapper historyMapper = GWT
+				.create(AppPlaceHistoryMapper.class);
+
+		final PlaceHistoryHandler historyHandler = new PlaceHistoryHandler(
+				historyMapper);
+		historyHandler.register(clientFactory.getPlaceController(),
+				clientFactory.getEventBus(), new LoginPlace());
 		historyHandler.handleCurrentHistory();
 	}
-	
-	//final PhoneGap phoneGap = GWT.create(PhoneGap.class);
+
+	// final PhoneGap phoneGap = GWT.create(PhoneGap.class);
 	private void createPhoneDisplay(final ClientFactory clientFactory) {
 		AnimatableDisplay display = GWT.create(AnimatableDisplay.class);
-		
-		//Activity Mapper
-		PhoneActivityMapper appActivityMapper = new PhoneActivityMapper(clientFactory);
+
+		// Activity Mapper
+		PhoneActivityMapper appActivityMapper = new PhoneActivityMapper(
+				clientFactory);
 		PhoneAnimationMapper appAnimationMapper = new PhoneAnimationMapper();
-		AnimatingActivityManager activityManager = new AnimatingActivityManager(appActivityMapper, appAnimationMapper, clientFactory.getEventBus());
-		
-		//PhoneGap
+		AnimatingActivityManager activityManager = new AnimatingActivityManager(
+				appActivityMapper, appAnimationMapper,
+				clientFactory.getEventBus());
+
+		// PhoneGap
 		final PhoneGap phoneGap = GWT.create(PhoneGap.class);
-		
-		phoneGap.addHandler(new PhoneGapAvailableHandler(){
 
-	        @Override
-	        public void onPhoneGapAvailable(PhoneGapAvailableEvent event) {
-	        	deviceName = phoneGap.getDevice().getName().isEmpty()?phoneGap.getDevice().getPlatform():phoneGap.getDevice().getName();
-	        	deviceImei = phoneGap.getDevice().getUuid();
-	        	
-	        	clientFactory.setPhonegap(phoneGap);
-	        	
-	        	//factory to MyDialogs
-	        	MyDialogs.phoneGap=phoneGap;
-	        }
-		});
+		phoneGap.addHandler(new PhoneGapAvailableHandler() {
 
-		phoneGap.addHandler(new PhoneGapTimeoutHandler() {
-		        @Override
-		        public void onPhoneGapTimeout(PhoneGapTimeoutEvent event) {
-		        	MyDialogs.alert("Problem", "The application failed to read device settings");
-		        }
-		});
-
-		phoneGap.initializePhoneGap();
-		
-		
-		phoneGap.getEvent().getPauseHandler().addPauseHandler(new PauseHandler() {
-			
 			@Override
-			public void onPause(PauseEvent event) {
-				//LoginActivity.loggedUserId = null;
+			public void onPhoneGapAvailable(PhoneGapAvailableEvent event) {
+				deviceName = phoneGap.getDevice().getName().isEmpty() ? phoneGap
+						.getDevice().getPlatform() : phoneGap.getDevice()
+						.getName();
+				deviceImei = phoneGap.getDevice().getUuid();
+
+				clientFactory.setPhonegap(phoneGap);
+
+				// factory to MyDialogs
+				MyDialogs.phoneGap = phoneGap;
 			}
 		});
 
+		phoneGap.addHandler(new PhoneGapTimeoutHandler() {
+			@Override
+			public void onPhoneGapTimeout(PhoneGapTimeoutEvent event) {
+				MyDialogs.alert("Problem",
+						"The application failed to read device settings");
+			}
+		});
+
+		phoneGap.initializePhoneGap();
+
+		phoneGap.getEvent().getPauseHandler()
+				.addPauseHandler(new PauseHandler() {
+
+					@Override
+					public void onPause(PauseEvent event) {
+						// LoginActivity.loggedUserId = null;
+					}
+				});
+
 		activityManager.setDisplay(display);
-		
+
 		RootPanel.get().add(display);
 	}
 
@@ -135,11 +143,16 @@ public class PioneerAppEntryPoint implements EntryPoint {
 
 			@Override
 			public void onUncaughtException(Throwable e) {
-				MyDialogs.alert("Problem","The Application encountered a Problem. Please Restart");
-				
-				//TODO send Notification to administrator
-				e.printStackTrace();
+				MyDialogs
+						.alert("Problem",
+								"The App encountered a Problem. Restart and report to Administrator");
 
+				consoleLog("Error::" + "Message" + e.getMessage()+"Stack Trace::"
+						+ e.getStackTrace() + "Localised Message"
+						+ e.getLocalizedMessage() + "Cause" + e.getCause());
+
+				// TODO send Notification to administrator
+				e.printStackTrace();
 			}
 		});
 
@@ -152,5 +165,9 @@ public class PioneerAppEntryPoint implements EntryPoint {
 		}.schedule(1);
 
 	}
+
+	public static native void consoleLog(Object message) /*-{
+		console.log("Pioneer App>>>>>>" + message);
+	}-*/;
 
 }

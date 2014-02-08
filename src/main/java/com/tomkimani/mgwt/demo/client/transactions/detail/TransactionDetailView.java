@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
 import com.googlecode.mgwt.ui.client.widget.Button;
 import com.googlecode.mgwt.ui.client.widget.FormListEntry;
+import com.googlecode.mgwt.ui.client.widget.HeaderButton;
 import com.googlecode.mgwt.ui.client.widget.LayoutPanel;
 import com.googlecode.mgwt.ui.client.widget.MTextBox;
 import com.googlecode.mgwt.ui.client.widget.ProgressIndicator;
@@ -26,7 +27,7 @@ public class TransactionDetailView extends BaseView implements ITransactionDetai
 	interface TransactionDetailViewUiBinder extends UiBinder<Widget,TransactionDetailView> {
 	}
 
-	private WidgetList customerDetail;
+	private WidgetList customerDetailshow;
 	private LayoutPanel main;
 	private WidgetList transactionList;
 	private MTextBox amountTextBox;
@@ -35,6 +36,13 @@ public class TransactionDetailView extends BaseView implements ITransactionDetai
 	private ScrollPanel scrollPanel;
 	private ProgressIndicator progressIndicator;
 	private ScrollPanel scrollPanel2;
+	private HeaderButton editButton;
+	private HTML lblMobile;
+	private MTextBox inputMobile;
+	private FormListEntry editBox;
+	private FormListEntry displayBox;
+	private WidgetList customerDetailsEdit;
+	public static String customNames;
 	
 	//private final Widget widget;
 	
@@ -46,9 +54,14 @@ public class TransactionDetailView extends BaseView implements ITransactionDetai
 		backButton.setVisible(true);
 		
 		
-		customerDetail = new WidgetList();
-		customerDetail.setRound(true);
-		main.add(customerDetail);
+		customerDetailshow = new WidgetList();
+		customerDetailshow.setRound(true);
+		main.add(customerDetailshow);
+		
+		customerDetailsEdit = new WidgetList();
+		customerDetailsEdit.setRound(true);
+		customerDetailsEdit.setVisible(false);
+		main.add(customerDetailsEdit);
 		
 		transactionList = new WidgetList();
 		transactionList.setRound(true);
@@ -58,6 +71,13 @@ public class TransactionDetailView extends BaseView implements ITransactionDetai
 		scrollPanel.setScrollingEnabledX(false);
 		
 		headerPanel.setVisible(true);
+		
+		logoutButton.setVisible(false);
+		
+		editButton = new HeaderButton();
+		editButton.setText("Edit");
+		headerPanel.setRightWidget(editButton);
+		
 		createContent(scrollPanel);
 		
 		buttonBar.setVisible(false);
@@ -74,11 +94,20 @@ public class TransactionDetailView extends BaseView implements ITransactionDetai
 		headerPanel.setCenter("Confirm Customer");
 		amountTextBox = new MTextBox();
 		amountTextBox.getElement().getFirstChildElement().setAttribute("type","number");
-		customerDetail.add(new FormListEntry("Names:", new HTML(cust1.getFirstName()+" "+cust1.getLastName())));
+		customNames = cust1.getFirstName() == null ? cust1.getFullNames():cust1.getFirstName()+" "+cust1.getLastName();
+		customerDetailshow.add(new FormListEntry("Names:", new HTML(customNames)));
 		//customerDetail.add(new FormListEntry("Id Number:", new HTML(cust1.getIdNo())));
-		customerDetail.add(new FormListEntry("Client Code:", new HTML(cust1.getRefNo())));
-		customerDetail.add(new FormListEntry("Phone Number:", new HTML(cust1.getMobileNo())));
+		customerDetailshow.add(new FormListEntry("Client Code:", new HTML(cust1.getRefNo())));
 		
+		lblMobile = new HTML(cust1.getMobileNo());
+		displayBox = new FormListEntry("Phone Number:",lblMobile);
+		customerDetailshow.add(displayBox);
+		
+		//CustomerDetailEdit
+		inputMobile = new MTextBox();
+		inputMobile.getElement().getFirstChildElement().setAttribute("type","number");
+		editBox = new FormListEntry("Phone Number:",inputMobile);
+		customerDetailsEdit.add(editBox);
 		
 		//Transaction Details
 		depositTitle =new HTML("Enter Deposit Amount:");
@@ -119,6 +148,40 @@ public class TransactionDetailView extends BaseView implements ITransactionDetai
 	
 	public ProgressIndicator getProgressIndicator() {
 		return progressIndicator;
+	}
+	
+	public HasTapHandlers getEditButton() {
+		return editButton;
+	}
+	
+	public MTextBox getInputMobile() {
+		return inputMobile;
+	}
+	
+	public void enableEdit(boolean status) {
+		if(status){
+			headerPanel.setCenter("Edit");
+			editButton.setText("Save");
+			backButton.setVisible(false);
+			customerDetailshow.setVisible(false);
+			customerDetailsEdit.setVisible(true);
+			
+			depositTitle.setVisible(false);
+			transactionList.setVisible(false);
+			saveButton.setVisible(false);
+		}else{
+			headerPanel.setCenter("Confirm Customer");
+			backButton.setVisible(true);
+			editButton.setText("Edit");
+			customerDetailshow.setVisible(true);
+			customerDetailsEdit.setVisible(false);
+				if(!inputMobile.getValue().equals("")){
+					lblMobile.setText(inputMobile.getValue());
+				}
+			depositTitle.setVisible(true);
+			transactionList.setVisible(true);
+			saveButton.setVisible(true);
+		}
 	}
 
 }
