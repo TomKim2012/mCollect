@@ -5,9 +5,11 @@ import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.place.shared.Place;
 import com.tomkimani.mgwt.demo.client.SearchResults.SearchResultsActivity;
+import com.tomkimani.mgwt.demo.client.contacts.ContactActivity;
 import com.tomkimani.mgwt.demo.client.customerSearch.CustomerSearchActivity;
 import com.tomkimani.mgwt.demo.client.dashboard.DashboardActivity;
 import com.tomkimani.mgwt.demo.client.login.LoginActivity;
+import com.tomkimani.mgwt.demo.client.places.ContactPlace;
 import com.tomkimani.mgwt.demo.client.places.CustomerSearchPlace;
 import com.tomkimani.mgwt.demo.client.places.DashboardPlace;
 import com.tomkimani.mgwt.demo.client.places.LoginPlace;
@@ -62,6 +64,10 @@ public class PhoneActivityMapper implements ActivityMapper {
 				return new DashboardActivity(clientFactory);
 			}
 			return new SettingsActivity(clientFactory);
+		}
+		
+		if(place instanceof ContactPlace){
+			return new ContactActivity(clientFactory);
 		}
 		
 		return new LoginActivity(clientFactory);

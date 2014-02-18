@@ -56,7 +56,7 @@ public class DashboardView extends BaseView implements IDashboardView{
 //		dashboadPanel.add(lqb); // or add it to any other place
 		
 		createContent(scroller);
-		setButtonBar();
+		setButtonBar();//Displays Active Icons
 	}
 	
 	@Override

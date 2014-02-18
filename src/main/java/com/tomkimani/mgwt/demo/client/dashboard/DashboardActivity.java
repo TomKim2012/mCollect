@@ -7,7 +7,7 @@ import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
 import com.tomkimani.mgwt.demo.client.ClientFactory;
 import com.tomkimani.mgwt.demo.client.base.BaseActivity;
-import com.tomkimani.mgwt.demo.client.places.CustomerSearchPlace;
+import com.tomkimani.mgwt.demo.client.places.ContactPlace;
 import com.tomkimani.mgwt.demo.client.places.TransactionsPlace;
 
 public class DashboardActivity extends BaseActivity {
@@ -41,7 +41,7 @@ public class DashboardActivity extends BaseActivity {
 			addHandlerRegistration(view.getBtnDeposit().addTapHandler(new TapHandler() {
 				@Override
 				public void onTap(TapEvent event) {
-					factory.getPlaceController().goTo(new CustomerSearchPlace());
+					factory.getPlaceController().goTo(new ContactPlace());
 				}
 			}));
 			
@@ -50,7 +50,7 @@ public class DashboardActivity extends BaseActivity {
 				
 				@Override
 				public void onTap(TapEvent event) {
-					factory.getPlaceController().goTo(new CustomerSearchPlace(true));
+					factory.getPlaceController().goTo(new ContactPlace(true));
 				}
 			}));
 			panel.setWidget(view);

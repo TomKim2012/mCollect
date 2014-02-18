@@ -4,8 +4,8 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestBuilder.Method;
 
 public class MyRequestBuilder{
-	//public static String serverAddress="197.248.2.44:8030";
-	public static String serverAddress="localhost";
+	public static String serverAddress="197.248.2.44:8030";
+	//public static String serverAddress="localhost";
 	public static String serverUrl= "http://"+serverAddress+"/PioneerMSSQL/index.php/api/flexipay_server/";
 	private String customUrl;
 	private String format = "/format/json/";
@@ -17,7 +17,7 @@ public class MyRequestBuilder{
 		builder = new RequestBuilder(httpMethod, serverUrl + this.customUrl+ this.format);
 		builder.setHeader("Content-Type", "application/json");
 		builder.setIncludeCredentials(true);
-		
+		builder.setTimeoutMillis(40000);
 	}
 	
 	
@@ -30,8 +30,6 @@ public class MyRequestBuilder{
 	public RequestBuilder getBuilder() {
 		return builder;
 	}
-	
-	/*** Application Utilities - PhoneGap****/
 	
 
 }

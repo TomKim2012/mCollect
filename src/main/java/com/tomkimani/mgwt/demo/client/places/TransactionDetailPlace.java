@@ -1,5 +1,7 @@
 package com.tomkimani.mgwt.demo.client.places;
 
+import java.util.LinkedList;
+
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.tomkimani.mgwt.demo.client.customerSearch.CustomerSearchActivity.Customer;
@@ -10,6 +12,7 @@ public class TransactionDetailPlace extends Place{
 	private Transaction transaction;
 	private Customer customer;
 	private Boolean isMiniStatement=false;
+	private LinkedList<Customer> customerList;
 
 	public TransactionDetailPlace(Transaction transaction) {
 		this.transaction = transaction;
@@ -36,6 +39,10 @@ public class TransactionDetailPlace extends Place{
 	
 	public Boolean getIsMiniStatement() {
 		return isMiniStatement;
+	}
+	
+	public LinkedList<Customer> getCustomerList() {
+		return customerList;
 	}
 	
 	public static class TransactionDetailPlaceTokenizer implements PlaceTokenizer<TransactionDetailPlace> {

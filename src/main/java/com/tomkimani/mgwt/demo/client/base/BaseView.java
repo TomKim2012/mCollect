@@ -1,10 +1,8 @@
 	package com.tomkimani.mgwt.demo.client.base;
 
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
-import com.googlecode.mgwt.ui.client.MGWTStyle;
 import com.googlecode.mgwt.ui.client.widget.HeaderButton;
 import com.googlecode.mgwt.ui.client.widget.HeaderPanel;
 import com.googlecode.mgwt.ui.client.widget.LayoutPanel;
@@ -18,7 +16,7 @@ public class BaseView implements IView{
 	protected LayoutPanel mainPanel;
 	protected ButtonBar buttonBar;
 	protected HeaderPanel headerPanel;
-	private ProgressIndicator progressIndicator;
+	protected ProgressIndicator progressIndicator;
 	protected HeaderButton logoutButton;
 	private HTML title;
 	protected FeaturedButton transactionButton;

@@ -1,0 +1,24 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" 
+	xmlns:p="urn:import:com.googlecode.mgwt.ui.client.widget.celllist"
+	xmlns:mgwt="urn:import:com.googlecode.mgwt.ui.client.widget">
+	
+	<mgwt:LayoutPanel>
+		
+		<mgwt:MSearchBox ui:field="searchBox"></mgwt:MSearchBox>
+		
+		<mgwt:ScrollPanel ui:field="scrollPanel" scrollingEnabledX="false">
+			<p:CellListWithHeader ui:field="cellList"></p:CellListWithHeader>
+		</mgwt:ScrollPanel>
+		
+		<mgwt:ProgressIndicator ui:field="progressIndicator" visible="false"></mgwt:ProgressIndicator>
+		
+		
+		<mgwt:LayoutPanel ui:field="divIssues">
+			<g:InlineLabel ui:field="spnError" styleName="icon-warning-sign muted">No Contacts found..</g:InlineLabel>
+		</mgwt:LayoutPanel>
+				
+	</mgwt:LayoutPanel>
+	
+</ui:UiBinder> 

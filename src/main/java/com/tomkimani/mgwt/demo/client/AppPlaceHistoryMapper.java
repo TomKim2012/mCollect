@@ -18,6 +18,7 @@ package com.tomkimani.mgwt.demo.client;
 
 import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.place.shared.WithTokenizers;
+import com.tomkimani.mgwt.demo.client.places.ContactPlace.ContactPlaceTokenizer;
 import com.tomkimani.mgwt.demo.client.places.CustomerSearchPlace.CustomerSearchPlaceTokenizer;
 import com.tomkimani.mgwt.demo.client.places.DashboardPlace.DashboardPlaceTokenizer;
 import com.tomkimani.mgwt.demo.client.places.LoginPlace.LoginPlaceTokenizer;
@@ -32,7 +33,7 @@ import com.tomkimani.mgwt.demo.client.places.TransactionsPlace.TransactionsPlace
  */
 @WithTokenizers({DashboardPlaceTokenizer.class,LoginPlaceTokenizer.class,TransactionsPlaceTokenizer.class,
 				TransactionDetailPlaceTokenizer.class,CustomerSearchPlaceTokenizer.class, SearchResultsPlaceTokenizer.class,
-				SettingsPlaceTokenizer.class
+				SettingsPlaceTokenizer.class,ContactPlaceTokenizer.class
 			   })
 public interface AppPlaceHistoryMapper extends PlaceHistoryMapper {
 }

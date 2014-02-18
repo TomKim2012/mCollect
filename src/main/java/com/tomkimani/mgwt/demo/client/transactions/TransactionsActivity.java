@@ -26,7 +26,6 @@ import com.tomkimani.mgwt.demo.client.ClientFactory;
 import com.tomkimani.mgwt.demo.client.MyDialogs;
 import com.tomkimani.mgwt.demo.client.MyRequestBuilder;
 import com.tomkimani.mgwt.demo.client.base.BaseActivity;
-import com.tomkimani.mgwt.demo.client.places.TransactionDetailPlace;
 import com.tomkimani.mgwt.demo.client.places.TransactionsPlace;
 import com.tomkimani.mgwt.demo.client.transactions.GroupCell.Content;
 import com.tomkimani.mgwt.demo.client.transactions.GroupCell.Header;
