@@ -87,10 +87,12 @@ public class ContactActivity extends BaseActivity {
     if (term == null)
       return;
    
-    if ("".equals(term)) {
+  /*  if ("".equals(term)) {
       return;
-    }
+    }*/
+    
     display.showBusy(true);
+    display.showError(false);
 	PioneerAppEntryPoint.consoleLog(">> Search started for "+term);
 	
     LightArray<String> fields = CollectionFactory.<String>constructArray();
@@ -112,9 +114,11 @@ public class ContactActivity extends BaseActivity {
     	display.showBusy(false);
         customerList = new LinkedList<Customer>();
         
-        int length =contacts.length()>50 ? 50:contacts.length();
-       
-        for (int i = 0; i < length; i++) {
+        int length =contacts.length()>50?50:contacts.length();
+        
+        System.out.println(length);
+        
+        for (int i = 0; i<length; i++) {
           Customer cust = makeCustomer();
 
           if(contacts.get(i).getName()!=null){
@@ -211,18 +215,18 @@ public class ContactActivity extends BaseActivity {
 		MyDialogs.alert("Noted","Customer List is not Null");
 	}*/
   
-	/*  
-  	Contact contact1 = phoneGap.getContacts().create();
+	  
+	/*Contact contact1 = phoneGap.getContacts().create();
     contact1.getPhoneNumbers().push(phoneGap.getContacts().getFactory().createContactField("home", "0729472421", true));
 	contact1.getName().setHonoricfPrefix("PF-001-2013");
-	contact1.setNickName("PC/00059");
+	contact1.setNickName("PB/01917");
 	contact1.getName().setFamilyName("Wakanae");
 	contact1.getName().setGivenName("John Wakanae");
-	contact1.save();
-	*/
+	contact1.save();*/
+	
 	
 	//clear the screen
-    //onSearchTermEntered("");
+    onSearchTermEntered("");
     
 
   }

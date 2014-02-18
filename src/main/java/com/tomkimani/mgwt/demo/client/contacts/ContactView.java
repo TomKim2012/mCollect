@@ -3,10 +3,8 @@ package com.tomkimani.mgwt.demo.client.contacts;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.layout.client.Layout;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
@@ -71,7 +69,7 @@ public class ContactView extends BaseView implements IContactsView {
 		searchBox.setPlaceHolder("Search by Customer Names, Phone Number or Reference code");
 		
 		//Issues
-		spnError.getElement().setAttribute("style","margin:100px; font-size:22px; color:green");
+		spnError.getElement().setAttribute("style","margin:50px; font-size:22px; color:gray");
 		
 
 		backButton.setVisible(true);
