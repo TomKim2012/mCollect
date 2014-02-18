@@ -15,7 +15,7 @@
 		<mgwt:ProgressIndicator ui:field="progressIndicator" visible="false"></mgwt:ProgressIndicator>
 		
 		
-		<mgwt:LayoutPanel ui:field="divIssues">
+		<mgwt:LayoutPanel ui:field="divIssues" visible="false">
 			<g:InlineLabel ui:field="spnError" styleName="icon-warning-sign muted">No Contacts found..</g:InlineLabel>
 		</mgwt:LayoutPanel>
 				
