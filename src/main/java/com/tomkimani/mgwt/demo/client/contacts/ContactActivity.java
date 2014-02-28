@@ -216,14 +216,23 @@ public class ContactActivity extends BaseActivity {
 	}*/
   
 	  
-	/*Contact contact1 = phoneGap.getContacts().create();
+   /*	
+    Contact contact1 = phoneGap.getContacts().create();
     contact1.getPhoneNumbers().push(phoneGap.getContacts().getFactory().createContactField("home", "0729472421", true));
-	contact1.getName().setHonoricfPrefix("PF-001-2013");
-	contact1.setNickName("PB/01917");
-	contact1.getName().setFamilyName("Wakanae");
-	contact1.getName().setGivenName("John Wakanae");
-	contact1.save();*/
+	contact1.getName().setHonoricfPrefix("PF-001-02555");
+	contact1.setNickName("PB/02555");
+	contact1.getName().setFamilyName("Muriranja");
+	contact1.getName().setGivenName("Tom Kimani");
+	contact1.save();
 	
+	Contact contact1 = phoneGap.getContacts().create();
+    contact1.getPhoneNumbers().push(phoneGap.getContacts().getFactory().createContactField("home", "0729472421", true));
+	contact1.getName().setHonoricfPrefix("PF-001-02555");
+	contact1.setNickName("PB/05020");
+	contact1.getName().setFamilyName("Gumisirize");
+	contact1.getName().setGivenName("Daniel woiye");
+	contact1.save();
+	*/
 	
 	//clear the screen
     onSearchTermEntered("");

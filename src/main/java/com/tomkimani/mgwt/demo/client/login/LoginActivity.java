@@ -167,7 +167,7 @@ public class LoginActivity extends MGWTAbstractActivity {
 								 MyDialogs.confirm(
 					       			  		MyDialogs.NETWORK_ERROR_TITLE,
 					       			  		MyDialogs.NETWORK_ERROR_MESSAGE,
-					       			  		ipChangeCallback
+					       			  		null
 											);
 							}
 						}
@@ -176,7 +176,7 @@ public class LoginActivity extends MGWTAbstractActivity {
 			 MyDialogs.confirm(
     			  		MyDialogs.NETWORK_ERROR_TITLE,
     			  		MyDialogs.NETWORK_ERROR_MESSAGE,
-    			  		ipChangeCallback
+    			  		null
 						);
 		}
 

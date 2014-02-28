@@ -133,6 +133,7 @@ public class PioneerAppEntryPoint implements EntryPoint {
 
 		phoneGap.initializePhoneGap();
 
+		/*
 		phoneGap.getEvent().getPauseHandler()
 				.addPauseHandler(new PauseHandler() {
 
@@ -141,6 +142,7 @@ public class PioneerAppEntryPoint implements EntryPoint {
 						// LoginActivity.loggedUserId = null;
 					}
 				});
+		*/
 
 		activityManager.setDisplay(display);
 
