@@ -26,8 +26,6 @@ import com.googlecode.gwtphonegap.client.PhoneGapAvailableEvent;
 import com.googlecode.gwtphonegap.client.PhoneGapAvailableHandler;
 import com.googlecode.gwtphonegap.client.PhoneGapTimeoutEvent;
 import com.googlecode.gwtphonegap.client.PhoneGapTimeoutHandler;
-import com.googlecode.gwtphonegap.client.event.PauseEvent;
-import com.googlecode.gwtphonegap.client.event.PauseHandler;
 import com.googlecode.mgwt.mvp.client.AnimatableDisplay;
 import com.googlecode.mgwt.mvp.client.AnimatingActivityManager;
 import com.googlecode.mgwt.ui.client.MGWT;
@@ -46,6 +44,7 @@ public class PioneerAppEntryPoint implements EntryPoint {
 
 	public static String deviceName;
 	public static String deviceImei;
+	private PhoneGap phoneGap;
 
 	private void start() {
 		// ViewPort
@@ -92,20 +91,7 @@ public class PioneerAppEntryPoint implements EntryPoint {
 		
 		AnimatingActivityManager activityManager = new AnimatingActivityManager(appActivityMapper, appAnimationMapper, clientFactory.getEventBus());
 		
-//		try {
-//	        Storage storage = Storage.getLocalStorageIfSupported();
-//	        if (storage==null)
-//	             throw new LocalStorageDatabaseException("Local storage not supported in the browser");
-//	        else {
-//	             //LdbApi.initialize(storage);
-//	        }
-//		} catch (LocalStorageDatabaseException e) {
-//		        e.printStackTrace();
-//		        //catch the exception and display on browser etc.
-//		}
-		
-		//PhoneGap
-		final PhoneGap phoneGap = GWT.create(PhoneGap.class);
+		phoneGap = GWT.create(PhoneGap.class);
 
 		phoneGap.addHandler(new PhoneGapAvailableHandler() {
 
@@ -127,7 +113,7 @@ public class PioneerAppEntryPoint implements EntryPoint {
 			@Override
 			public void onPhoneGapTimeout(PhoneGapTimeoutEvent event) {
 				MyDialogs.alert("Problem",
-						"The application failed to read device settings");
+						"The application failed to read device settings.");
 			}
 		});
 
@@ -178,7 +164,7 @@ public class PioneerAppEntryPoint implements EntryPoint {
 		}.schedule(1);
 
 	}
-
+	
 	public static native void consoleLog(Object message) /*-{
 		console.log("Pioneer App>>>>>>" + message);
 	}-*/;

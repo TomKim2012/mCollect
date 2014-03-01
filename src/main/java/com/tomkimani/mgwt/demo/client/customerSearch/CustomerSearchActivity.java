@@ -28,129 +28,158 @@ import com.tomkimani.mgwt.demo.client.places.DashboardPlace;
 import com.tomkimani.mgwt.demo.client.places.SearchResultsPlace;
 
 public class CustomerSearchActivity extends BaseActivity {
-		private MyBeanFactory beanFactory;
-		private List<Customer> custList;
-		private Boolean isMinistatement=false;
-		
-		public interface ICustomerSearchView extends IView{
-			HasTapHandlers getSearchButton();
-			String getmListBox();
-			String getCustInput();
-			HTML getIssuesArea();
-			void showBusy(boolean status);
-		}
-		public CustomerSearchActivity(ClientFactory factory) {
-			super(factory);
-		}
-		
-		@Override
-		public void start(AcceptsOneWidget panel, EventBus eventBus) {
-			//View Factory
-			final ICustomerSearchView view = factory.getCustomerSearchView();
-			setView(view);
-			
-			super.start(panel, eventBus);
-			//AutoBean Factory
-			beanFactory = GWT.create(MyBeanFactory.class);
-			
-			Place place = factory.getPlaceController().getWhere();
-			
-			if(place instanceof CustomerSearchPlace){
-				CustomerSearchPlace searchPlace = (CustomerSearchPlace)place;
-				
-				isMinistatement = searchPlace.getMiniStatement();
-			}
-			
-			addHandlerRegistration(view.getSearchButton().addTapHandler(new TapHandler() {
-				
-				@Override
-				public void onTap(TapEvent event) {
-					String parameter = view.getmListBox(); 
-					String value = view.getCustInput();
-					if(!value.isEmpty()){
-						postDataToServer(parameter,value,view);
-					}else{
-						view.getIssuesArea().setText("You have not entered any value or done selection");
-						view.getIssuesArea().setVisible(true);
-					}
-				}
-			}));
-			
-			addHandlerRegistration(view.getBackButton().addTapHandler(new TapHandler() {
-				@Override
-				public void onTap(TapEvent event) {
-					factory.getPlaceController().goTo(new DashboardPlace());
-				}
-			}));
-		
-			panel.setWidget(view);
+	private MyBeanFactory beanFactory;
+	private List<Customer> custList;
+	private Boolean isMinistatement = false;
+
+	public interface ICustomerSearchView extends IView {
+		HasTapHandlers getSearchButton();
+
+		String getmListBox();
+
+		String getCustInput();
+
+		HTML getIssuesArea();
+
+		void showBusy(boolean status);
+	}
+
+	public CustomerSearchActivity(ClientFactory factory) {
+		super(factory);
+	}
+
+	@Override
+	public void start(AcceptsOneWidget panel, EventBus eventBus) {
+		// View Factory
+		final ICustomerSearchView view = factory.getCustomerSearchView();
+		setView(view);
+
+		super.start(panel, eventBus);
+		// AutoBean Factory
+		beanFactory = GWT.create(MyBeanFactory.class);
+
+		Place place = factory.getPlaceController().getWhere();
+
+		if (place instanceof CustomerSearchPlace) {
+			CustomerSearchPlace searchPlace = (CustomerSearchPlace) place;
+
+			isMinistatement = searchPlace.getMiniStatement();
 		}
 
-		private void postDataToServer(String searchParameter, String searchValue,final ICustomerSearchView view) {
-			String customUrl ="custDetails/parameter/"+searchParameter + "/value/"+searchValue;
-			
-			MyRequestBuilder rqs = new MyRequestBuilder(RequestBuilder.GET, customUrl);
-			try {
-				  view.showBusy(true);
-			      Request request = rqs.getBuilder().sendRequest(null, new MyRequestCallback() {
-			    	
-			    	@Override
-			        public void onResponseReceived(Request request, Response response) {
-			        	super.onResponseReceived(request, response);  
-			    		view.showBusy(false);
-			        	  custList = new ArrayList<Customer>();
-			        	
-			        	  if(response.getText().isEmpty()){
-				        	  view.getIssuesArea().setText("Customer Records not Found"); 
-				        	  view.getIssuesArea().setVisible(true);
-				        	  return;
-				           }
-			           	 
-			        	  CustomerList lst = deserializeFromJson("{\"customerList\": "+response.getText()+"}");
-			        	  custList = lst.getCustomerList();
-			        	  
-			        	  //Check if search is Mini-Statement OR Deposit
-			        	  if(isMinistatement){
-			        		  factory.getPlaceController().goTo(new SearchResultsPlace(custList,true));
-			        	  }else{
-			        		  factory.getPlaceController().goTo(new SearchResultsPlace(custList));
-			        	  }
-			         
-			        }
-			      });
-			    } catch (RequestException e) {
-			    	MyDialogs.alert(
-							MyDialogs.NETWORK_ERROR_MESSAGE,
-							MyDialogs.NETWORK_ERROR_TITLE);
-			    }
+		addHandlerRegistration(view.getSearchButton().addTapHandler(
+				new TapHandler() {
+
+					@Override
+					public void onTap(TapEvent event) {
+						String parameter = view.getmListBox();
+						String value = view.getCustInput();
+						if (!value.isEmpty()) {
+							postDataToServer(parameter, value, view);
+						} else {
+							view.getIssuesArea()
+									.setText(
+											"You have not entered any value or done selection");
+							view.getIssuesArea().setVisible(true);
+						}
+					}
+				}));
+
+		addHandlerRegistration(view.getBackButton().addTapHandler(
+				new TapHandler() {
+					@Override
+					public void onTap(TapEvent event) {
+						factory.getPlaceController().goTo(new DashboardPlace());
+					}
+				}));
+
+		panel.setWidget(view);
+	}
+
+	private void postDataToServer(String searchParameter, String searchValue,
+			final ICustomerSearchView view) {
+		String customUrl = "custDetails/parameter/" + searchParameter
+				+ "/value/" + searchValue;
+
+		MyRequestBuilder rqs = new MyRequestBuilder(RequestBuilder.GET,
+				customUrl);
+		try {
+			view.showBusy(true);
+			Request request = rqs.getBuilder().sendRequest(null,
+					new MyRequestCallback() {
+
+						@Override
+						public void onResponseReceived(Request request,
+								Response response) {
+							super.onResponseReceived(request, response);
+							view.showBusy(false);
+							custList = new ArrayList<Customer>();
+
+							if (response.getText().isEmpty()) {
+								view.getIssuesArea().setText(
+										"Customer Records not Found");
+								view.getIssuesArea().setVisible(true);
+								return;
+							}
+
+							CustomerList lst = deserializeFromJson("{\"customerList\": "
+									+ response.getText() + "}");
+							custList = lst.getCustomerList();
+
+							// Check if search is Mini-Statement OR Deposit
+							if (isMinistatement) {
+								factory.getPlaceController().goTo(
+										new SearchResultsPlace(custList, true));
+							} else {
+								factory.getPlaceController().goTo(
+										new SearchResultsPlace(custList));
+							}
+
+						}
+					});
+		} catch (RequestException e) {
+			MyDialogs.alert(MyDialogs.NETWORK_ERROR_MESSAGE,
+					MyDialogs.NETWORK_ERROR_TITLE);
 		}
-		
-		public interface Customer{
-			String getRefNo();
-			String getFirstName();
-			String getLastName();
-			String getIdNo();
-			String getMobileNo();
-			String getCustomerId();
-			String getFullNames();
-			
-			public void setRefNo(String value);
-			public void setFirstName(String value);
-			public void setLastName(String value);
-			public void setIdNo(String value);
-			public void setMobileNo(String value);
-			public void setCustomerId(String value);
-			public void setFullNames(String value);
-		}
-		
-		
-		public interface CustomerList{
-			List<Customer> getCustomerList();
-		}
-		
-		CustomerList deserializeFromJson (String json){
-			//System.out.println(json);
-			AutoBean<CustomerList> bean = AutoBeanCodex.decode(beanFactory, CustomerList.class, json);
-			return bean.as();
-		}	
+	}
+
+	public interface Customer {
+		String getRefNo();
+
+		String getFirstName();
+
+		String getLastName();
+
+		String getIdNo();
+
+		String getMobileNo();
+
+		String getCustomerId();
+
+		String getFullNames();
+
+		public void setRefNo(String value);
+
+		public void setFirstName(String value);
+
+		public void setLastName(String value);
+
+		public void setIdNo(String value);
+
+		public void setMobileNo(String value);
+
+		public void setCustomerId(String value);
+
+		public void setFullNames(String value);
+	}
+
+	public interface CustomerList {
+		List<Customer> getCustomerList();
+	}
+
+	CustomerList deserializeFromJson(String json) {
+		// System.out.println(json);
+		AutoBean<CustomerList> bean = AutoBeanCodex.decode(beanFactory,
+				CustomerList.class, json);
+		return bean.as();
+	}
 }

@@ -100,7 +100,7 @@ public class LoginView implements ILoginView{
 		
 		mListBox = new MListBox();
 		mListBox.addItem("Cloud Server","197.248.2.44:8030");
-		mListBox.addItem("Local", "192.168.43.66");
+		mListBox.addItem("Local", "197.237.31.119");
 		ipConfigList.add(mListBox);
 		serverAddress = new MTextBox();
 		serverAddress.getElement().setAttribute("type", "number");
