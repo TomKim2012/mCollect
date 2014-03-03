@@ -1,6 +1,7 @@
 package com.tomkimani.mgwt.demo.client.dashboard;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Float;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -27,6 +28,7 @@ public class DashboardView extends BaseView implements IDashboardView{
 	@UiField IconButton btnDeposit;
 	@UiField IconButton btnStatement;
 	@UiField InlineLabel spnUserName;
+	@UiField InlineLabel spnSync;
 	@UiField HTMLPanel divUser;
 	@UiField HorizontalPanel downsideDiv;
 	private LayoutPanel dashboadPanel;
@@ -43,6 +45,11 @@ public class DashboardView extends BaseView implements IDashboardView{
 		spnUserName.setText("Welcome "+LoginActivity.loggedFullNames);
 		spnUserName.getElement().getStyle().setMargin(5.0, Unit.PCT);
 		spnUserName.getElement().getStyle().setColor("Blue");
+		
+		spnSync.setText("Checking..");
+		spnSync.getElement().getStyle().setFloat(Float.RIGHT);
+		spnSync.getElement().getStyle().setColor("Grey");
+		
 		dashboadPanel.add(divUser);
 		
 		dashboadPanel.setHeight("100%");
@@ -86,6 +93,10 @@ public class DashboardView extends BaseView implements IDashboardView{
 	
 	public HasTapHandlers getBtnStatement() {
 		return btnStatement;
+	}
+	
+	public void setSyncStatus(String text){
+		spnSync.setText(text);
 	}
 			
 }

@@ -38,30 +38,29 @@ import com.tomkimani.mgwt.demo.client.places.TransactionDetailPlace;
 
 public class ContactActivity extends BaseActivity {
 
-  private MyBeanFactory beanFactory;
-  private final PhoneGap phoneGap;
-  private final IContactsView display;
-  private static LinkedList<Customer> customerList;
-  private Boolean isMiniStatement= false;
-  protected String searchTerm="";
-  
-  
-  private String title = "";
-  private  String givenName ="";
-  private String familyName ="";
-  private String middleName = "";
-  private String formattedName = "";
-  private String nickName ="";
-  private String phone= "";
-  
-  protected Timer timer=new Timer() {
+	private MyBeanFactory beanFactory;
+	private final PhoneGap phoneGap;
+	private final IContactsView display;
+	private static LinkedList<Customer> customerList;
+	private Boolean isMiniStatement = false;
+	protected String searchTerm = "";
+
+	private String title = "";
+	private String givenName = "";
+	private String familyName = "";
+	private String middleName = "";
+	private String formattedName = "";
+	private String nickName = "";
+	private String phone = "";
+
+	protected Timer timer = new Timer() {
 		@Override
 		public void run() {
 			onSearchTermEntered(searchTerm);
 		}
 	};
-  
-   public interface IContactsView extends IView {
+
+	public interface IContactsView extends IView {
 		public void display(List<Customer> contacts);
 
 		MSearchBox getSearchBox();
@@ -72,174 +71,194 @@ public class ContactActivity extends BaseActivity {
 
 		void showError(boolean status);
 
-}
-
-  public ContactActivity(ClientFactory clientFactory) {
-    super(clientFactory);
-
-    this.display = clientFactory.getContactDisplay();
-    this.phoneGap = clientFactory.getPhonegap();
-	this.beanFactory = GWT.create(MyBeanFactory.class);
-  }
-  
-  public void onSearchTermEntered(String term) {
-	
-    if (term == null)
-      return;
-   
-  /*  if ("".equals(term)) {
-      return;
-    }*/
-    
-    display.showBusy(true);
-    display.showError(false);
-	PioneerAppEntryPoint.consoleLog(">> Search started for "+term);
-	
-    LightArray<String> fields = CollectionFactory.<String>constructArray();
-
-    fields.push("name");
-    fields.push("phoneNumbers");
-    fields.push("displayName");
-    fields.push("nickname");
-
-    ContactFindOptions findOptions = new ContactFindOptions(term,true);
-    //findOptions.setFilter("PF");
-    //findOptions.setUpdatedSince(updatedSince)
-    //findOptions.setMutiple(false);
-    
-    phoneGap.getContacts().find(fields, new ContactFindCallback() {
-      @Override
-      public void onSuccess(LightArray<Contact> contacts) {
-    	PioneerAppEntryPoint.consoleLog("<<Search Finished Number of Results:"+contacts.length());
-    	display.showBusy(false);
-        customerList = new LinkedList<Customer>();
-        
-        int length =contacts.length()>50?50:contacts.length();
-        
-        System.out.println(length);
-        
-        for (int i = 0; i<length; i++) {
-          Customer cust = makeCustomer();
-
-          if(contacts.get(i).getName()!=null){
-	          title = contacts.get(i).getName().getHonoricPrefix()!=null?contacts.get(i).getName().getHonoricPrefix():"";
-	          givenName = contacts.get(i).getName().getGivenName() != null? contacts.get(i).getName().getGivenName():"";
-	          familyName = contacts.get(i).getName().getFamilyName() != null?contacts.get(i).getName().getFamilyName() : "";
-	          middleName = contacts.get(i).getName().getMiddleName() != null?contacts.get(i).getName().getMiddleName() : "";
-	          formattedName =contacts.get(i).getName().getFormatted();
-          }
-          cust.setFullNames(formattedName);
-          cust.setFirstName(givenName);
-          cust.setLastName(middleName+" "+familyName);
-          cust.setRefNo(title);
-	      
-          if(contacts.get(i).getNickName()!=null){
-        	  nickName = contacts.get(i).getNickName()!=null?contacts.get(i).getNickName():null;
-          }
-          cust.setCustomerId(nickName);
-          
-          if(contacts.get(i).getPhoneNumbers().length()>0){
-	          phone = contacts.get(i).getPhoneNumbers().get(0).getValue();
-          }
-          cust.setMobileNo(phone);
-          
-          customerList.add(cust);
-          
-        }
-
-        if (contacts.length() == 0) {
-        	display.showError(true);
-        	//MyDialogs.alert("No contact", "No Contacts set returned");
-        }
-
-        display.display(customerList);
-      }
-
-      @Override
-      public void onFailure(ContactError error) {
-        MyDialogs.alert("Error","Error while searching for contacts");
-
-      }
-    }, findOptions);
-
-  }
-
-  @Override
-  public void start(AcceptsOneWidget panel, EventBus eventBus) {
-
-    panel.setWidget(display);
-    
-    addHandlerRegistration(display.getSearchBox().addKeyUpHandler(new KeyUpHandler() {
-		@Override
-		public void onKeyUp(KeyUpEvent event) {
-			String txt = display.getSearchBox().getValue().trim();
-			if((!txt.equals(searchTerm)&&txt.length()>5) || event.getNativeKeyCode()==KeyCodes.KEY_ENTER){
-				searchTerm = txt;
-				timer.cancel();
-				timer.schedule(400);
-				PioneerAppEntryPoint.consoleLog("KeyUp Finished this>"+searchTerm);
-			}
-		}
-	}));
-    
-	addHandlerRegistration(display.getCellList().addCellSelectedHandler(new CellSelectedHandler(){
-		@Override
-		public void onCellSelected(CellSelectedEvent event) {
-			Customer cust1 = customerList.get(event.getIndex());
-			
-			
-			if(isMiniStatement){
-			 factory.getPlaceController().goTo(new TransactionDetailPlace(cust1,true));
-			}else{
-			 factory.getPlaceController().goTo(new TransactionDetailPlace(cust1));
-			}
-		}
-	}));
-    
-	addHandlerRegistration(display.getBackButton().addTapHandler(new TapHandler() {
-		@Override
-		public void onTap(TapEvent event) {
-			factory.getPlaceController().goTo(new DashboardPlace());
-		}
-	}));
-	
-	
-	Place place =factory.getPlaceController().getWhere();
-	if(place instanceof ContactPlace){
-		ContactPlace contactPlace = (ContactPlace)place;
-		isMiniStatement = contactPlace.getMiniStatement();				
 	}
-    
-	/*	
-  	if(customerList != null){
-		MyDialogs.alert("Noted","Customer List is not Null");
-	}*/
-  
-	  
-   /*	
-    Contact contact1 = phoneGap.getContacts().create();
-    contact1.getPhoneNumbers().push(phoneGap.getContacts().getFactory().createContactField("home", "0729472421", true));
-	contact1.getName().setHonoricfPrefix("PF-001-02555");
-	contact1.setNickName("PB/02555");
-	contact1.getName().setFamilyName("Muriranja");
-	contact1.getName().setGivenName("Tom Kimani");
-	contact1.save();
-	
-	Contact contact1 = phoneGap.getContacts().create();
-    contact1.getPhoneNumbers().push(phoneGap.getContacts().getFactory().createContactField("home", "0729472421", true));
-	contact1.getName().setHonoricfPrefix("PF-001-02555");
-	contact1.setNickName("PB/05020");
-	contact1.getName().setFamilyName("Gumisirize");
-	contact1.getName().setGivenName("Daniel woiye");
-	contact1.save();
-	*/
-	
-	//clear the screen
-    onSearchTermEntered("");
-    
 
-  }
-  
+	public ContactActivity(ClientFactory clientFactory) {
+		super(clientFactory);
+
+		this.display = clientFactory.getContactDisplay();
+		this.phoneGap = clientFactory.getPhonegap();
+		this.beanFactory = GWT.create(MyBeanFactory.class);
+	}
+
+	public void onSearchTermEntered(String term) {
+
+		if (term == null)
+			return;
+
+		/*
+		 * if ("".equals(term)) { return; }
+		 */
+
+		display.showBusy(true);
+		display.showError(false);
+		PioneerAppEntryPoint.consoleLog(">> Search started for " + term);
+
+		LightArray<String> fields = CollectionFactory.<String> constructArray();
+
+		fields.push("name");
+		fields.push("phoneNumbers");
+		fields.push("displayName");
+		fields.push("nickname");
+
+		ContactFindOptions findOptions = new ContactFindOptions(term, true);
+		// findOptions.setFilter("PF");
+		// findOptions.setUpdatedSince(updatedSince)
+		// findOptions.setMutiple(false);
+
+		phoneGap.getContacts().find(fields, new ContactFindCallback() {
+			@Override
+			public void onSuccess(LightArray<Contact> contacts) {
+				PioneerAppEntryPoint
+						.consoleLog("<<Search Finished Number of Results:"
+								+ contacts.length());
+				display.showBusy(false);
+				customerList = new LinkedList<Customer>();
+
+				int length = contacts.length() > 50 ? 50 : contacts.length();
+
+				for (int i = 0; i < length; i++) {
+
+					if (contacts.get(i).getNickName().contains("/")) {
+
+						Customer cust = makeCustomer();
+						if (contacts.get(i).getName() != null) {
+							title = contacts.get(i).getName()
+									.getHonoricPrefix() != null ? contacts
+									.get(i).getName().getHonoricPrefix() : "";
+							givenName = contacts.get(i).getName()
+									.getGivenName() != null ? contacts.get(i)
+									.getName().getGivenName() : "";
+							familyName = contacts.get(i).getName()
+									.getFamilyName() != null ? contacts.get(i)
+									.getName().getFamilyName() : "";
+							middleName = contacts.get(i).getName()
+									.getMiddleName() != null ? contacts.get(i)
+									.getName().getMiddleName() : "";
+							formattedName = contacts.get(i).getName()
+									.getFormatted();
+						}
+						cust.setFullNames(formattedName);
+						cust.setFirstName(givenName);
+						cust.setLastName(middleName + " " + familyName);
+						cust.setRefNo(title);
+
+						if (contacts.get(i).getNickName() != null) {
+							nickName = contacts.get(i).getNickName() != null ? contacts
+									.get(i).getNickName() : null;
+						}
+						cust.setCustomerId(nickName);
+
+						if (contacts.get(i).getPhoneNumbers().length() > 0) {
+							phone = contacts.get(i).getPhoneNumbers().get(0)
+									.getValue();
+						}
+						cust.setMobileNo(phone);
+
+						customerList.add(cust);
+					}
+
+				}
+
+				if (contacts.length() == 0) {
+					display.showError(true);
+				}
+
+				display.display(customerList);
+			}
+
+			@Override
+			public void onFailure(ContactError error) {
+				MyDialogs.alert("Error", "Error while searching for contacts");
+
+			}
+		}, findOptions);
+
+	}
+
+	@Override
+	public void start(AcceptsOneWidget panel, EventBus eventBus) {
+
+		panel.setWidget(display);
+
+		addHandlerRegistration(display.getSearchBox().addKeyUpHandler(
+				new KeyUpHandler() {
+					@Override
+					public void onKeyUp(KeyUpEvent event) {
+						String txt = display.getSearchBox().getValue().trim();
+						if ((!txt.equals(searchTerm) && txt.length() > 5)
+								|| event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+							searchTerm = txt;
+							timer.cancel();
+							timer.schedule(400);
+							PioneerAppEntryPoint
+									.consoleLog("KeyUp Finished this>"
+											+ searchTerm);
+						}
+					}
+				}));
+
+		addHandlerRegistration(display.getCellList().addCellSelectedHandler(
+				new CellSelectedHandler() {
+					@Override
+					public void onCellSelected(CellSelectedEvent event) {
+						Customer cust1 = customerList.get(event.getIndex());
+
+						if (isMiniStatement) {
+							factory.getPlaceController().goTo(
+									new TransactionDetailPlace(cust1, true));
+						} else {
+							factory.getPlaceController().goTo(
+									new TransactionDetailPlace(cust1));
+						}
+					}
+				}));
+
+		addHandlerRegistration(display.getBackButton().addTapHandler(
+				new TapHandler() {
+					@Override
+					public void onTap(TapEvent event) {
+						factory.getPlaceController().goTo(new DashboardPlace());
+					}
+				}));
+
+		Place place = factory.getPlaceController().getWhere();
+		if (place instanceof ContactPlace) {
+			ContactPlace contactPlace = (ContactPlace) place;
+			isMiniStatement = contactPlace.getMiniStatement();
+		}
+
+		/*
+		 * if(customerList != null){
+		 * MyDialogs.alert("Noted","Customer List is not Null"); }
+		 */
+
+		/*
+		 * Contact contact1 = phoneGap.getContacts().create();
+		 * contact1.getPhoneNumbers
+		 * ().push(phoneGap.getContacts().getFactory().createContactField
+		 * ("home", "0729472421", true));
+		 * contact1.getName().setHonoricfPrefix("PF-001-02555");
+		 * contact1.setNickName("PB/02555");
+		 * contact1.getName().setFamilyName("Muriranja");
+		 * contact1.getName().setGivenName("Tom Kimani"); contact1.save();
+		 */
+
+		Contact contact1 = phoneGap.getContacts().create();
+		contact1.getPhoneNumbers().push(
+				phoneGap.getContacts().getFactory()
+						.createContactField("home", "0729472421", true));
+		contact1.getName().setHonoricfPrefix("PF-001-02555");
+		//contact1.setNickName("PB/05020");
+		contact1.getName().setFamilyName("Gumisirize");
+		contact1.getName().setGivenName("Daniel woiye");
+		contact1.save();
+
+		// clear the screen
+		// onSearchTermEntered("");
+
+	}
+
 	public Customer makeCustomer() {
 		AutoBean<Customer> customer = beanFactory.Customer();
 		return customer.as();

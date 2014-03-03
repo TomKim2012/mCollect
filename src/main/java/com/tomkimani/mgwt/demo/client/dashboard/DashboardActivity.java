@@ -42,11 +42,14 @@ public class DashboardActivity extends BaseActivity {
 	// TransactionsActivity transaction= new TransactionsActivity(factory);
 	private final PhoneGap phoneGap;
 	private MyBeanFactory beanFactory;
+	private IDashboardView view;
 
 	public interface IDashboardView extends IView {
 		HasTapHandlers getBtnDeposit();
 
 		HasTapHandlers getBtnStatement();
+
+		void setSyncStatus(String text);
 	}
 
 	public DashboardActivity(ClientFactory factory) {
@@ -57,7 +60,7 @@ public class DashboardActivity extends BaseActivity {
 
 	@Override
 	public void start(AcceptsOneWidget panel, EventBus eventBus) {
-		IDashboardView view = factory.getDashboardView();
+		view = factory.getDashboardView();
 		setView(view);
 
 		super.start(panel, eventBus);
@@ -148,19 +151,27 @@ public class DashboardActivity extends BaseActivity {
 	/*
 	 * check with the server difference in contacts
 	 */
-
+	private String contactCount="";
 	private void performSyncCheck(final Integer clientCount) {
-		// view.showBusy(true);
+		String postData="";
+		view.setSyncStatus("Checking..");
 		String customUrl = "customerSyncCheck";
-		PioneerAppEntryPoint.consoleLog("Pushed Customer count to server"
+		
+		PioneerAppEntryPoint.consoleLog("Pushed Customer count to server as: "
 				+ clientCount);
 
 		JSONObject jrequest = new JSONObject();
-		String contactCount = Integer.toString(clientCount);
-
+		
+		if(clientCount==0){
+			contactCount="Zero";
+		}else{
+			contactCount = Integer.toString(clientCount);
+		}
+		
 		jrequest.put("contactCount", new JSONString(contactCount));
+		postData = jrequest.toString();
+		
 
-		String postData = jrequest.toString();
 
 		MyRequestBuilder rqs = new MyRequestBuilder(RequestBuilder.POST,
 				customUrl);
@@ -180,7 +191,15 @@ public class DashboardActivity extends BaseActivity {
 										.consoleLog("Count Difference:"
 												+ countDifference);
 								
+								if(countDifference<0){
+									//Show contacts In Sync
+									view.setSyncStatus("Sync unusual");
+									return;
+								}
+								
 								if(countDifference==0){
+									//Show contacts In Sync
+									view.setSyncStatus("Contacts Synced");
 									return;
 								}
 								
@@ -188,7 +207,7 @@ public class DashboardActivity extends BaseActivity {
 										.confirm(
 												"Sync Message",
 												countDifference
-														+ " Customers need to be Synced. Sync now?",
+														+ " Customer(s) need to be Synced. Sync now?",
 												new ConfirmCallback() {
 
 													@Override
@@ -196,35 +215,39 @@ public class DashboardActivity extends BaseActivity {
 															int button) {
 														if (button == 1) {
 															performSync(clientCount,countDifference);
+														}else{
+															view.setSyncStatus("Sync Cancelled");
 														}
 													}
 												});
 							} else {
+								view.setSyncStatus("Sync Failed");
 								PioneerAppEntryPoint
-										.consoleLog("Communication Problem in Sync check");
+										.consoleLog("Sync Failed - 404");
 							}
 						}
 
 					});
 		} catch (RequestException e) {
-			System.err.println("Couldn't retrieve JSON");
+			view.setSyncStatus("Sync Failed");
+			PioneerAppEntryPoint.consoleLog("Sync Failed - 404");
 		}
 
 		// showTransactionComplete();
 	}
 
 	private void performSync(Integer clientCount, Integer countDifference) {
+		view.setSyncStatus("Syncing...");
 		String customUrl = "customerSync";
-		
 		PioneerAppEntryPoint.consoleLog("Started syncronising.."
 				+ countDifference + "contacts");
 
 		JSONObject jrequest = new JSONObject();
 		String contactCount = Integer.toString(clientCount);
-		String countDifference2 = Integer.toString(countDifference);
+		String countString = Integer.toString(countDifference);
 
 		jrequest.put("contactCount", new JSONString(contactCount));
-		jrequest.put("countDifference", new JSONString(countDifference2));
+		jrequest.put("countDifference", new JSONString(countString));
 
 		MyRequestBuilder rqs = new MyRequestBuilder(RequestBuilder.POST,
 				customUrl);
@@ -241,11 +264,11 @@ public class DashboardActivity extends BaseActivity {
 						public void onResponseReceived(Request request,
 								Response response) {
 							super.onResponseReceived(request, response);
-							//view.showBusy(false);
+							view.setSyncStatus("Saving ...");
 							custList = new ArrayList<Customer>();
 
 							if (response.getText().isEmpty()) {
-								PioneerAppEntryPoint.consoleLog("The server returned no new customers");
+								PioneerAppEntryPoint.consoleLog("The server returned no new customers.");
 
 //								view.getIssuesArea().setText(
 //										"Customer Records not Found");
@@ -269,19 +292,22 @@ public class DashboardActivity extends BaseActivity {
 	private void createContacts(List<Customer> custList) {
 		PioneerAppEntryPoint.consoleLog("Started creating contacts on phone");
 		
+		int counter = 0;
 		for(Customer cust: custList){
 		    Contact contact1 = phoneGap.getContacts().create();
+		    contact1.getName().setFormatted(cust.getFullNames());
 		    contact1.getPhoneNumbers().push(phoneGap.getContacts().getFactory().createContactField("home", cust.getMobileNo(), true));
 			contact1.getName().setHonoricfPrefix(cust.getRefNo());
 			contact1.setNickName(cust.getCustomerId());
 			contact1.getName().setFamilyName(cust.getLastName());
 			contact1.getName().setGivenName(cust.getFirstName()+" "+cust.getLastName());
 			contact1.save();
-			
-			PioneerAppEntryPoint.consoleLog("1 contact Saved");
+			view.setSyncStatus(counter +"/"+custList.size() + " Saved");
 		}
 		
-		MyDialogs.alert("Success", "Success!"+custList.size()+" contacts have been saved");
+		view.setSyncStatus("Contacts Synced");
+		
+		//MyDialogs.alert("Success", "Success!"+custList.size()+" contacts have been saved");
 	}
 
 	public interface SyncResult {

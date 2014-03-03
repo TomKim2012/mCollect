@@ -12,6 +12,8 @@
 			<g:VerticalPanel ui:field="vPanel" verticalAlignment="ALIGN_BOTTOM" spacing="5">
 				<g:HTMLPanel ui:field="divUser">
 					<g:InlineLabel ui:field="spnUserName"></g:InlineLabel>
+					
+					<g:InlineLabel ui:field="spnSync"></g:InlineLabel>
 				</g:HTMLPanel>
 				<g:HorizontalPanel>
 					<p:IconButton  ui:field="btnDeposit" icon="icon-plus icon-2x" text="New Deposit"></p:IconButton>
