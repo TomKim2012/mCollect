@@ -44,6 +44,7 @@ public class ContactActivity extends BaseActivity {
 	private static LinkedList<Customer> customerList;
 	private Boolean isMiniStatement = false;
 	protected String searchTerm = "";
+	private static LightArray<Contact> allContacts;
 
 	private String title = "";
 	private String givenName = "";
@@ -86,9 +87,9 @@ public class ContactActivity extends BaseActivity {
 		if (term == null)
 			return;
 
-		/*
-		 * if ("".equals(term)) { return; }
-		 */
+		/*if ("".equals(term)) {
+			return;
+		}*/
 
 		display.showBusy(true);
 		display.showError(false);
@@ -109,6 +110,8 @@ public class ContactActivity extends BaseActivity {
 		phoneGap.getContacts().find(fields, new ContactFindCallback() {
 			@Override
 			public void onSuccess(LightArray<Contact> contacts) {
+
+				allContacts = contacts;
 				PioneerAppEntryPoint
 						.consoleLog("<<Search Finished Number of Results:"
 								+ contacts.length());
@@ -137,25 +140,28 @@ public class ContactActivity extends BaseActivity {
 									.getName().getMiddleName() : "";
 							formattedName = contacts.get(i).getName()
 									.getFormatted();
+							
+							cust.setFullNames(formattedName);
+							cust.setFirstName(givenName);
+							cust.setLastName(middleName + " " + familyName);
+							cust.setRefNo(title);
 						}
-						cust.setFullNames(formattedName);
-						cust.setFirstName(givenName);
-						cust.setLastName(middleName + " " + familyName);
-						cust.setRefNo(title);
 
 						if (contacts.get(i).getNickName() != null) {
 							nickName = contacts.get(i).getNickName() != null ? contacts
 									.get(i).getNickName() : null;
+							cust.setCustomerId(nickName);
 						}
-						cust.setCustomerId(nickName);
-
+						
 						if (contacts.get(i).getPhoneNumbers().length() > 0) {
 							phone = contacts.get(i).getPhoneNumbers().get(0)
 									.getValue();
+							cust.setMobileNo(phone);
 						}
-						cust.setMobileNo(phone);
-
-						customerList.add(cust);
+						
+						if(cust.getCustomerId()!=null){
+						 customerList.add(cust);
+						}
 					}
 
 				}
@@ -170,7 +176,6 @@ public class ContactActivity extends BaseActivity {
 			@Override
 			public void onFailure(ContactError error) {
 				MyDialogs.alert("Error", "Error while searching for contacts");
-
 			}
 		}, findOptions);
 
@@ -192,7 +197,7 @@ public class ContactActivity extends BaseActivity {
 							timer.cancel();
 							timer.schedule(400);
 							PioneerAppEntryPoint
-									.consoleLog("KeyUp Finished this>"
+									.consoleLog("Finished Typing >>>"
 											+ searchTerm);
 						}
 					}
@@ -204,12 +209,18 @@ public class ContactActivity extends BaseActivity {
 					public void onCellSelected(CellSelectedEvent event) {
 						Customer cust1 = customerList.get(event.getIndex());
 
+						Contact contact = allContacts.get(event.getIndex());
+
+						// MyDialogs.alert("Contact Object",
+						// "We removed Contact: "+ contact.getNickName());
+
 						if (isMiniStatement) {
 							factory.getPlaceController().goTo(
-									new TransactionDetailPlace(cust1, true));
+									new TransactionDetailPlace(cust1, true,
+											contact));
 						} else {
 							factory.getPlaceController().goTo(
-									new TransactionDetailPlace(cust1));
+									new TransactionDetailPlace(cust1, contact));
 						}
 					}
 				}));
@@ -228,34 +239,32 @@ public class ContactActivity extends BaseActivity {
 			isMiniStatement = contactPlace.getMiniStatement();
 		}
 
-		/*
-		 * if(customerList != null){
-		 * MyDialogs.alert("Noted","Customer List is not Null"); }
+		 /*
+		 if(customerList != null){
+		 MyDialogs.alert("Noted","Customer List is not Null"); }
 		 */
 
-		/*
+		 /*
+		 Contact contact1 = phoneGap.getContacts().create();
+		 contact1.getPhoneNumbers().push( phoneGap.getContacts().getFactory()
+		 .createContactField("home", "0729472421", true));
+		 contact1.getName().setHonoricfPrefix("PF-001-02555");
+		 contact1.setNickName("PB/02555");
+		 contact1.getName().setFamilyName("Muriranja");
+		 contact1.getName().setGivenName("Tom Kimani"); contact1.save();
+		
+		
 		 * Contact contact1 = phoneGap.getContacts().create();
-		 * contact1.getPhoneNumbers
-		 * ().push(phoneGap.getContacts().getFactory().createContactField
-		 * ("home", "0729472421", true));
+		 * contact1.getPhoneNumbers().push( phoneGap.getContacts().getFactory()
+		 * .createContactField("home", "0729472421", true));
 		 * contact1.getName().setHonoricfPrefix("PF-001-02555");
-		 * contact1.setNickName("PB/02555");
-		 * contact1.getName().setFamilyName("Muriranja");
-		 * contact1.getName().setGivenName("Tom Kimani"); contact1.save();
+		 * //contact1.setNickName("PB/05020");
+		 * contact1.getName().setFamilyName("Gumisirize");
+		 * contact1.getName().setGivenName("Daniel woiye"); contact1.save();
 		 */
-
-		Contact contact1 = phoneGap.getContacts().create();
-		contact1.getPhoneNumbers().push(
-				phoneGap.getContacts().getFactory()
-						.createContactField("home", "0729472421", true));
-		contact1.getName().setHonoricfPrefix("PF-001-02555");
-		//contact1.setNickName("PB/05020");
-		contact1.getName().setFamilyName("Gumisirize");
-		contact1.getName().setGivenName("Daniel woiye");
-		contact1.save();
 
 		// clear the screen
-		// onSearchTermEntered("");
+		//onSearchTermEntered("");
 
 	}
 

@@ -34,11 +34,12 @@ import com.tomkimani.mgwt.demo.client.PioneerAppEntryPoint;
 import com.tomkimani.mgwt.demo.client.base.BaseActivity;
 import com.tomkimani.mgwt.demo.client.customerSearch.CustomerSearchActivity.Customer;
 import com.tomkimani.mgwt.demo.client.customerSearch.CustomerSearchActivity.CustomerList;
+import com.tomkimani.mgwt.demo.client.login.LoginActivity;
 import com.tomkimani.mgwt.demo.client.places.ContactPlace;
 import com.tomkimani.mgwt.demo.client.places.TransactionsPlace;
 
 public class DashboardActivity extends BaseActivity {
-	private static final boolean hasSynchronised = false;
+	private static boolean hasSynchronised = false;
 	// TransactionsActivity transaction= new TransactionsActivity(factory);
 	private final PhoneGap phoneGap;
 	private MyBeanFactory beanFactory;
@@ -93,14 +94,21 @@ public class DashboardActivity extends BaseActivity {
 					}
 				}));
 		panel.setWidget(view);
-
-		if (!hasSynchronised) {
-			SynchronizeContacts();
+		
+		if(LoginActivity.loggedUserGroup.equals("Admin")){
+			if (!hasSynchronised) {
+				SynchronizeContacts();
+			}else{
+				view.setSyncStatus("Contacts Synced");
+			}
+			
+		}else{
+			//No status
+			view.setSyncStatus("");
 		}
 	}
 
 	public void SynchronizeContacts() {
-
 		String term = "";
 		PioneerAppEntryPoint.consoleLog(">>Started Synchronisation Check");
 
@@ -132,6 +140,7 @@ public class DashboardActivity extends BaseActivity {
 						}
 					}
 				}
+				hasSynchronised=true;
 				PioneerAppEntryPoint.consoleLog("Local Client Count:"
 						+ clientCount);
 
@@ -237,7 +246,7 @@ public class DashboardActivity extends BaseActivity {
 	}
 
 	private void performSync(Integer clientCount, Integer countDifference) {
-		view.setSyncStatus("Syncing...");
+		view.setSyncStatus("Getting data...");
 		String customUrl = "customerSync";
 		PioneerAppEntryPoint.consoleLog("Started syncronising.."
 				+ countDifference + "contacts");
@@ -252,6 +261,7 @@ public class DashboardActivity extends BaseActivity {
 		MyRequestBuilder rqs = new MyRequestBuilder(RequestBuilder.POST,
 				customUrl);
 		
+		rqs.getBuilder().setTimeoutMillis(60000);
 		String postData = jrequest.toString();
 		try {
 			//view.showBusy(true); //Show Syncing
@@ -300,14 +310,15 @@ public class DashboardActivity extends BaseActivity {
 			contact1.getName().setHonoricfPrefix(cust.getRefNo());
 			contact1.setNickName(cust.getCustomerId());
 			contact1.getName().setFamilyName(cust.getLastName());
-			contact1.getName().setGivenName(cust.getFirstName()+" "+cust.getLastName());
+			contact1.getName().setMiddleName(cust.getMiddleName());
+			contact1.getName().setGivenName(cust.getFirstName()+" "+cust.getMiddleName());
 			contact1.save();
 			view.setSyncStatus(counter +"/"+custList.size() + " Saved");
 		}
 		
 		view.setSyncStatus("Contacts Synced");
 		
-		//MyDialogs.alert("Success", "Success!"+custList.size()+" contacts have been saved");
+		MyDialogs.alert("Success", "Success!"+custList.size()+" contacts have been saved");
 	}
 
 	public interface SyncResult {

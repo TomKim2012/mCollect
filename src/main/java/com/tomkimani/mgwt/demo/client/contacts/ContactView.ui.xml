@@ -16,7 +16,7 @@
 		
 		
 		<mgwt:LayoutPanel ui:field="divIssues" visible="false">
-			<g:InlineLabel ui:field="spnError" styleName="icon-warning-sign muted">No Contacts found..</g:InlineLabel>
+			 <g:InlineLabel ui:field="spnError" styleName="icon-warning-sign muted">No Contacts found..</g:InlineLabel>
 		</mgwt:LayoutPanel>
 				
 	</mgwt:LayoutPanel>

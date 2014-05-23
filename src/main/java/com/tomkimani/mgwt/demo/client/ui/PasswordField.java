@@ -8,7 +8,7 @@ public class PasswordField extends MPasswordTextBox{
 		getElement().getFirstChildElement().setAttribute("placeHolder", placeHolderValue);
 	}
 	public void setPlaceholder(String placeHolderValue){
-		getElement().setAttribute("placeHolder", placeHolderValue);
+		getElement().getFirstChildElement().setAttribute("placeHolder", placeHolderValue);
 	}
 	
 	public void setClass(String className){

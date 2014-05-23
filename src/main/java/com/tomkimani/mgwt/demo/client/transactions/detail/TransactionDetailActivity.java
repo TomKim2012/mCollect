@@ -12,6 +12,9 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.event.shared.EventBus;
+import com.googlecode.gwtphonegap.client.PhoneGap;
+import com.googlecode.gwtphonegap.client.contacts.Contact;
+import com.googlecode.gwtphonegap.client.contacts.ContactName;
 import com.googlecode.gwtphonegap.client.notification.AlertCallback;
 import com.googlecode.gwtphonegap.client.notification.ConfirmCallback;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
@@ -39,6 +42,7 @@ public class TransactionDetailActivity extends BaseActivity {
 	private Boolean isMiniStatement = false;
 	private boolean iscustEdited = false;
 	private String newMobile;
+	private final PhoneGap phoneGap;
 
 	public interface ITransactionDetailView extends IView {
 		public HasTapHandlers getBackButton();
@@ -61,6 +65,7 @@ public class TransactionDetailActivity extends BaseActivity {
 
 	public TransactionDetailActivity(ClientFactory factory) {
 		super(factory);
+		this.phoneGap = factory.getPhonegap();
 	}
 
 	@Override
@@ -79,6 +84,7 @@ public class TransactionDetailActivity extends BaseActivity {
 			TransactionDetailPlace transactionDetailPlace = (TransactionDetailPlace) place;
 
 			final Customer cust1 = transactionDetailPlace.getCustomer();
+			final Contact contact = transactionDetailPlace.getContact();
 			isMiniStatement = transactionDetailPlace.getIsMiniStatement();
 
 			if (!(cust1 == null)) {
@@ -174,9 +180,9 @@ public class TransactionDetailActivity extends BaseActivity {
 
 								@Override
 								public void onTap(TapEvent event) {
-									PioneerAppEntryPoint
+									/*PioneerAppEntryPoint
 											.consoleLog("Cust Edited Before >>>"
-													+ iscustEdited);
+													+ iscustEdited);*/
 									if (isEditClicked) {
 										view.enableEdit(true);
 										isEditClicked = false;
@@ -189,13 +195,15 @@ public class TransactionDetailActivity extends BaseActivity {
 											newMobile = view.getInputMobile()
 													.getValue();
 											cust1.setMobileNo(newMobile);
+											contact.remove();// Remove this contact
+											createContact(cust1); // Create New Contact.
 											iscustEdited = true;
 										}
 									}
 
-									PioneerAppEntryPoint
+									/*	PioneerAppEntryPoint
 											.consoleLog("Cust Edited After>>"
-													+ iscustEdited);
+													+ iscustEdited);*/
 								}
 							}));
 
@@ -205,6 +213,24 @@ public class TransactionDetailActivity extends BaseActivity {
 		}
 		panel.setWidget(view);
 
+	}
+
+	protected void createContact(Customer cust1) {
+		Contact contact1 = phoneGap.getContacts().create();
+		contact1.getName().setFormatted(
+				cust1.getFullNames()==null?"":cust1.getFullNames());
+		contact1.getPhoneNumbers().push(
+				phoneGap.getContacts().getFactory()
+						.createContactField("home", cust1.getMobileNo(), true));
+		contact1.getName().setHonoricfPrefix(cust1.getRefNo());
+		contact1.setNickName(cust1.getCustomerId());
+		
+		contact1.getName().setFamilyName(cust1.getLastName()==null?"":cust1.getLastName());
+		contact1.getName().setMiddleName(cust1.getMiddleName()==null?"":cust1.getMiddleName());
+		contact1.getName().setGivenName(
+				cust1.getFirstName() + " " + cust1.getMiddleName()==null?"":cust1.getMiddleName());
+		contact1.save();
+		PioneerAppEntryPoint.consoleLog("Contact Has been re-created");
 	}
 
 	public void checkMobile(String mobileNo) {
@@ -221,8 +247,7 @@ public class TransactionDetailActivity extends BaseActivity {
 			boolean iscustEdited) {
 		view.showBusy(true);
 		String customUrl = "transactions";
-		PioneerAppEntryPoint.consoleLog("Cust Edited when sending to server>>"
-				+ iscustEdited);
+	
 
 		JSONObject jrequest = new JSONObject();
 		jrequest.put("customerId", new JSONString(cust.getCustomerId()));

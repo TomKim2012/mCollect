@@ -16,7 +16,6 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.googlecode.gwtphonegap.client.PhoneGap;
 import com.googlecode.gwtphonegap.client.event.MenuButtonPressedEvent;
 import com.googlecode.gwtphonegap.client.event.MenuButtonPressedHandler;
-import com.googlecode.gwtphonegap.client.notification.ConfirmCallback;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
 import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
@@ -29,7 +28,6 @@ import com.tomkimani.mgwt.demo.client.MyRequestBuilder;
 import com.tomkimani.mgwt.demo.client.MyRequestCallback;
 import com.tomkimani.mgwt.demo.client.PioneerAppEntryPoint;
 import com.tomkimani.mgwt.demo.client.places.DashboardPlace;
-import com.tomkimani.mgwt.demo.client.places.SettingsPlace;
 
 public class LoginActivity extends MGWTAbstractActivity {
 	ClientFactory factory;
@@ -40,7 +38,6 @@ public class LoginActivity extends MGWTAbstractActivity {
 	public static String loggedUserGroup;
 	public static String loggedUserId;
 	public static String loggedUserName;
-	private ConfirmCallback ipChangeCallback;
 
 	public interface ILoginView extends IsWidget {
 		HasTapHandlers getLoginButton();
@@ -58,6 +55,10 @@ public class LoginActivity extends MGWTAbstractActivity {
 		HasTapHandlers getSaveButton();
 
 		void showIpChange(boolean status);
+
+		void showUpdatePassword(boolean status, String userName);
+
+		String getconfirmPassword();
 	}
 
 	public LoginActivity(ClientFactory factory) {
@@ -73,8 +74,9 @@ public class LoginActivity extends MGWTAbstractActivity {
 		// AutoBean Factory
 		beanFactory = GWT.create(MyBeanFactory.class);
 
+		view.showUpdatePassword(false, null);
+
 		view.getServerAddress().setValue(MyRequestBuilder.serverAddress);
-		
 
 		// Add Tap Handler for Login
 		addHandlerRegistration(view.getLoginButton().addTapHandler(
@@ -86,6 +88,25 @@ public class LoginActivity extends MGWTAbstractActivity {
 						String password = view.getpassword();
 						String imeiCode = PioneerAppEntryPoint.deviceImei;
 
+						if (LoginView.isFirstTime) {
+							String confirmPassword = view.getconfirmPassword();
+							
+							if ((password.isEmpty()) && (confirmPassword.isEmpty())) {
+								view.getIssuesArea().setText(
+										"Please Fill In the Fields");
+								view.getIssuesArea().setVisible(true);
+								return;
+							}
+							
+							if (password.equals(confirmPassword)) {
+								performPasswordUpdate(confirmPassword,imeiCode);
+							} else {
+								view.getIssuesArea().setText(
+										"Passwords don't Match");
+								view.getIssuesArea().setVisible(true);
+							}
+						}
+
 						if ((!userName.isEmpty()) && (!password.isEmpty())) {
 							performLogin(userName, password, imeiCode);
 						} else {
@@ -95,30 +116,95 @@ public class LoginActivity extends MGWTAbstractActivity {
 						}
 					}
 				}));
-		
-		addHandlerRegistration(view.getSaveButton().addTapHandler(new TapHandler() {
-			
-			@Override
-			public void onTap(TapEvent event) {
-				String serverAddress = view.getServerAddress().getValue();
-				MyRequestBuilder.setServerAddress(serverAddress);
-				view.showIpChange(false);
-			}
-		}));
-		
-		factory.getPhonegap().getEvent().getMenuButton().addMenuButtonPressedHandler(new MenuButtonPressedHandler() {
-			private boolean isShown = true;
-			@Override
-			public void onMenuButtonPressed(MenuButtonPressedEvent event) {
-					if(isShown){
-					view.showIpChange(true);
-					isShown=false;
-					}else{
-					view.showIpChange(false);
-					isShown=true;	
+
+		addHandlerRegistration(view.getSaveButton().addTapHandler(
+				new TapHandler() {
+
+					@Override
+					public void onTap(TapEvent event) {
+						String serverAddress = view.getServerAddress()
+								.getValue();
+						MyRequestBuilder.setServerAddress(serverAddress);
+						view.showIpChange(false);
 					}
-			}
-		});
+				}));
+
+		factory.getPhonegap().getEvent().getMenuButton()
+				.addMenuButtonPressedHandler(new MenuButtonPressedHandler() {
+					private boolean isShown = true;
+
+					@Override
+					public void onMenuButtonPressed(MenuButtonPressedEvent event) {
+						if (isShown) {
+							view.showIpChange(true);
+							isShown = false;
+						} else {
+							view.showIpChange(false);
+							isShown = true;
+						}
+					}
+				});
+
+	}
+
+	protected void performPasswordUpdate(String password, String imeiCode) {
+		String customUrl = "updatePassword";
+
+		JSONObject jrequest = new JSONObject();
+		jrequest.put("userId", new JSONString(loggedUserId));
+		jrequest.put("userName", new JSONString(loggedUserName));
+		jrequest.put("imeiCode", new JSONString(imeiCode));
+		jrequest.put("password", new JSONString(password));
+		String postData = jrequest.toString();
+
+		MyRequestBuilder rqs = new MyRequestBuilder(RequestBuilder.POST,
+				customUrl);
+		view.showBusy(true);
+		try {
+			Request request = rqs.getBuilder().sendRequest(postData,
+					new MyRequestCallback() {
+
+						public void onResponseReceived(Request request,
+								Response response) {
+							view.showBusy(false);
+							if (200 == response.getStatusCode()) {
+								User loggedUser = deserializeFromJson(response
+										.getText());
+								if (loggedUser.getAuthorize()) {
+
+									loggedUserId = loggedUser.getUserId();
+									if (loggedUser.getFirstTime()) {
+										view.showUpdatePassword(true,
+												loggedUser.getUserName());
+										return;
+									}
+
+									loggedUserGroup = loggedUser.getGroup();
+									loggedUserName = loggedUser.getUserName();
+									loggedFullNames = loggedUser.getFirstName();
+
+									factory.getPlaceController().goTo(
+											new DashboardPlace());
+
+								} else {
+									view.showUpdatePassword(false, null);
+									view.getIssuesArea().setText(
+											loggedUser.getError());
+									view.getIssuesArea().setVisible(true);
+								}
+
+							} else {
+								MyDialogs.confirm(
+										MyDialogs.NETWORK_ERROR_TITLE,
+										MyDialogs.NETWORK_ERROR_MESSAGE, null);
+							}
+						}
+					});
+		} catch (RequestException e) {
+			view.showBusy(false);
+			MyDialogs.confirm(MyDialogs.NETWORK_ERROR_TITLE,
+					MyDialogs.NETWORK_ERROR_MESSAGE, null);
+		}
 
 	}
 
@@ -142,21 +228,26 @@ public class LoginActivity extends MGWTAbstractActivity {
 								Response response) {
 							view.showBusy(false);
 							if (200 == response.getStatusCode()) {
+								PioneerAppEntryPoint.consoleLog(response.getText());
 								User loggedUser = deserializeFromJson(response
 										.getText());
 								if (loggedUser.getAuthorize()) {
+
 									loggedUserId = loggedUser.getUserId();
-									loggedUserGroup = loggedUser.getGroup();
 									loggedUserName = loggedUser.getUserName();
-									loggedFullNames = loggedUser.getFirstName();
 									
-									if(loggedUserGroup.equals("Admin")){
-										factory.getPlaceController().goTo(
-												new SettingsPlace());
-									}else{
-										factory.getPlaceController().goTo(
-											new DashboardPlace());
+									if (loggedUser.getFirstTime()) {
+										view.showUpdatePassword(true,
+												loggedUser.getUserName());
+										return;
 									}
+
+									loggedUserGroup = loggedUser.getGroup();
+									loggedFullNames = loggedUser.getFirstName();
+
+									factory.getPlaceController().goTo(
+											new DashboardPlace());
+
 								} else {
 									view.getIssuesArea().setText(
 											loggedUser.getError());
@@ -164,20 +255,16 @@ public class LoginActivity extends MGWTAbstractActivity {
 								}
 
 							} else {
-								 MyDialogs.confirm(
-					       			  		MyDialogs.NETWORK_ERROR_TITLE,
-					       			  		MyDialogs.NETWORK_ERROR_MESSAGE,
-					       			  		null
-											);
+								MyDialogs.confirm(
+										MyDialogs.NETWORK_ERROR_TITLE,
+										MyDialogs.NETWORK_ERROR_MESSAGE, null);
 							}
 						}
 					});
 		} catch (RequestException e) {
-			 MyDialogs.confirm(
-    			  		MyDialogs.NETWORK_ERROR_TITLE,
-    			  		MyDialogs.NETWORK_ERROR_MESSAGE,
-    			  		null
-						);
+			view.showBusy(false);
+			MyDialogs.confirm(MyDialogs.NETWORK_ERROR_TITLE,
+					MyDialogs.NETWORK_ERROR_MESSAGE, null);
 		}
 
 	}
@@ -194,6 +281,8 @@ public class LoginActivity extends MGWTAbstractActivity {
 		String getUserName();
 
 		Boolean getAuthorize();
+
+		Boolean getFirstTime();
 
 		String getError();
 	}

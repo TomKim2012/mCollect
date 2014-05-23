@@ -17,7 +17,6 @@ import com.tomkimani.mgwt.demo.client.customerSearch.CustomerResult;
 import com.tomkimani.mgwt.demo.client.customerSearch.CustomerSearchActivity.Customer;
 import com.tomkimani.mgwt.demo.client.places.CustomerSearchPlace;
 import com.tomkimani.mgwt.demo.client.places.SearchResultsPlace;
-import com.tomkimani.mgwt.demo.client.places.TransactionDetailPlace;
 
 public class SearchResultsActivity extends BaseActivity {
 		
@@ -63,9 +62,9 @@ public class SearchResultsActivity extends BaseActivity {
 					
 					
 					if(isMiniStatement){
-					 factory.getPlaceController().goTo(new TransactionDetailPlace(cust1,true));
+					 //factory.getPlaceController().goTo(new TransactionDetailPlace(cust1,true));
 					}else{
-					 factory.getPlaceController().goTo(new TransactionDetailPlace(cust1));
+					 //factory.getPlaceController().goTo(new TransactionDetailPlace(cust1));
 					}
 				}
 			}));

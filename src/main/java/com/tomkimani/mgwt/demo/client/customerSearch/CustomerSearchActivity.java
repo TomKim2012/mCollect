@@ -146,6 +146,8 @@ public class CustomerSearchActivity extends BaseActivity {
 		String getRefNo();
 
 		String getFirstName();
+		
+		String getMiddleName();
 
 		String getLastName();
 
@@ -156,6 +158,8 @@ public class CustomerSearchActivity extends BaseActivity {
 		String getCustomerId();
 
 		String getFullNames();
+		
+		//Contact getContact();
 
 		public void setRefNo(String value);
 
@@ -170,6 +174,8 @@ public class CustomerSearchActivity extends BaseActivity {
 		public void setCustomerId(String value);
 
 		public void setFullNames(String value);
+
+		//void setContact(Contact contact);
 	}
 
 	public interface CustomerList {

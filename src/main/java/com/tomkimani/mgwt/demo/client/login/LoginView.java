@@ -1,6 +1,8 @@
 package com.tomkimani.mgwt.demo.client.login;
- 
+
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.dom.client.Style.TextDecoration;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -23,18 +25,19 @@ import com.tomkimani.mgwt.demo.client.ui.IconButton;
 import com.tomkimani.mgwt.demo.client.ui.PasswordField;
 import com.tomkimani.mgwt.demo.client.ui.TextField;
 
-public class LoginView implements ILoginView{
+public class LoginView implements ILoginView {
 
 	private static LoginViewUiBinder uiBinder = GWT
 			.create(LoginViewUiBinder.class);
+
 	interface LoginViewUiBinder extends UiBinder<Widget, LoginView> {
 	}
-	
+
 	LayoutPanel LayoutPanel;
 	WidgetList widgetList;
 	Button loginButton;
 	private HTML IssuesArea;
-	private TextField userName;
+	private TextField userNameField;
 	private PasswordField passWord;
 	private ProgressIndicator progressIndicator;
 	private MTextBox serverAddress;
@@ -42,162 +45,198 @@ public class LoginView implements ILoginView{
 	private MListBox mListBox;
 	private Button saveButton;
 	private IconButton ipButton;
+	private PasswordField confirmPassWord;
+	private HTML title;
 	
-	//private final Widget widget;
-	
+	public static Boolean isFirstTime = false;
+
+	// private final Widget widget;
+
 	public LoginView() {
-		//widget = uiBinder.createAndBindUi(this);
+		// widget = uiBinder.createAndBindUi(this);
 		widgetList = new WidgetList();
-		
+
 		ipConfigList = new WidgetList();
 		LayoutPanel = new LayoutPanel();
+		title = new HTML();
 		IssuesArea = new HTML();
 		loginButton = new Button("LOGIN");
-		ipButton = new IconButton("icon-cogs",null);
-	
-		//Logo
+		ipButton = new IconButton("icon-cogs", null);
+
+		// Logo
 		Image logo = new Image(LogoBundle.INSTANCE.logo());
 		logo.getElement().getStyle().setMarginLeft(20.0, Unit.PCT);
 		LayoutPanel.add(logo);
-		
-		
-		//UserName And Password TexFields
+
+		// UserName And Password TexFields
 		widgetList.setRound(true);
-		userName = new TextField("UserName");
+		userNameField = new TextField("UserName");
 		passWord = new PasswordField("Password");
-		widgetList.add(userName);
+		confirmPassWord = new PasswordField("Confirm Password");
+		widgetList.add(userNameField);
 		widgetList.add(passWord);
-		
-		//Ipconfig List
+
+		// Ipconfig List
 		ipConfigList.setRound(true);
 		ipConfigList.setVisible(false);
-		//LayoutPanel.add(new HTML("Set the Ip-Address"));
+		// LayoutPanel.add(new HTML("Set the Ip-Address"));
 		ipButton.setVisible(false);
 		ipButton.getElement().getStyle().clearWidth();
 		ipButton.setWidth("8%");
 		ipButton.removeMinWidth();
-		ipButton.getElement().getStyle().setMarginTop(30,Unit.PCT);
-		
+		ipButton.getElement().getStyle().setMarginTop(30, Unit.PCT);
+
 		ipButton.addTapHandler(new TapHandler() {
-			
+
 			private boolean isShown = true;
 
 			@Override
 			public void onTap(TapEvent event) {
-				if(isShown){
-				showIpChange(true);
-				ipButton.setIcon("icon-arrow-left");
-				isShown=false;
-				}else{
-				showIpChange(false);
-				ipButton.setIcon(" icon-cogs");
-				isShown=true;	
+				if (isShown) {
+					showIpChange(true);
+					ipButton.setIcon("icon-arrow-left");
+					isShown = false;
+				} else {
+					showIpChange(false);
+					ipButton.setIcon(" icon-cogs");
+					isShown = true;
 				}
 			}
 		});
-		
-		
-		
+
 		mListBox = new MListBox();
-		mListBox.addItem("Cloud Server","197.248.2.44:8030");
+		mListBox.addItem("Cloud Server", "197.248.2.44:8030");
 		mListBox.addItem("Local", "197.237.31.119");
 		ipConfigList.add(mListBox);
 		serverAddress = new MTextBox();
 		serverAddress.getElement().setAttribute("type", "number");
 		ipConfigList.add(serverAddress);
-	
+
 		saveButton = new Button("Save");
 		saveButton.setConfirm(true);
 		saveButton.setVisible(false);
-		
+
 		mListBox.addChangeHandler(new ChangeHandler() {
 			@Override
 			public void onChange(ChangeEvent event) {
-				String value=mListBox.getValue(mListBox.getSelectedIndex());
+				String value = mListBox.getValue(mListBox.getSelectedIndex());
 				serverAddress.setValue(value);
 			}
 		});
 		
-		//Layout Panel Items
+		//Title Area
+		title.getElement().getStyle().setColor("Blue");
+		title.setVisible(false);
+		title.getElement().getStyle().setMarginLeft(20.0, Unit.PCT);
+		title.getElement().getStyle().setMarginTop(5.0, Unit.PCT);
+		title.getElement().getStyle().setTextDecoration(TextDecoration.UNDERLINE);
+		title.getElement().getStyle().setFontWeight(FontWeight.BOLD);
+		LayoutPanel.add(title);
+		
+		
+		// Layout Panel Items
 		LayoutPanel.add(widgetList);
 		LayoutPanel.add(ipConfigList);
-		
-		
-		//Progress Indicator
+
+		// Progress Indicator
 		progressIndicator = new ProgressIndicator();
-		progressIndicator.getElement().setAttribute("style", "margin:auto; margin-top: 50px");
+		progressIndicator.getElement().setAttribute("style",
+				"margin:auto; margin-top: 50px");
 		progressIndicator.setVisible(false);
 		LayoutPanel.add(progressIndicator);
 		
-		//IssuesArea
+		// IssuesArea
 		IssuesArea.getElement().getStyle().setColor("Red");
 		IssuesArea.setVisible(false);
 		IssuesArea.getElement().getStyle().setMarginLeft(20.0, Unit.PCT);
 		LayoutPanel.add(IssuesArea);
-		
-		//LoginButton
+
+		// LoginButton
 		loginButton.setConfirm(true);
 		LayoutPanel.add(loginButton);
 		LayoutPanel.add(saveButton);
 		LayoutPanel.add(ipButton);
-		
+
 	}
-	
+
 	@Override
 	public Widget asWidget() {
 		return LayoutPanel;
 	}
-	
+
 	public HasTapHandlers getLoginButton() {
 		return loginButton;
 	}
-	
+
 	public HTML getIssuesArea() {
 		return IssuesArea;
 	}
 
 	@Override
 	public String getuserName() {
-		return userName.getValue();
+		return userNameField.getValue();
 	}
 
 	@Override
 	public String getpassword() {
 		return passWord.getValue();
 	}
-	
-	public void showBusy(boolean status){
-		if(status){
+
+	public void showBusy(boolean status) {
+		if (status) {
 			progressIndicator.setVisible(true);
-		}else{
+		} else {
 			progressIndicator.setVisible(false);
 		}
 	}
-	
+
 	public MTextBox getServerAddress() {
 		return serverAddress;
 	}
-	
+
 	public HasTapHandlers getSaveButton() {
 		return saveButton;
 	}
 
 	@Override
 	public void showIpChange(boolean status) {
-		if(status){
-		widgetList.setVisible(false);
-		ipConfigList.setVisible(true);
-		loginButton.setVisible(false);
-		saveButton.setVisible(true);
-		}else{
-		widgetList.setVisible(true);
-		ipConfigList.setVisible(false);
-		loginButton.setVisible(true);
-		saveButton.setVisible(false);
+		if (status) {
+			widgetList.setVisible(false);
+			ipConfigList.setVisible(true);
+			loginButton.setVisible(false);
+			saveButton.setVisible(true);
+		} else {
+			widgetList.setVisible(true);
+			ipConfigList.setVisible(false);
+			loginButton.setVisible(true);
+			saveButton.setVisible(false);
 		}
 	}
-	
-	
 
+	@Override
+	public void showUpdatePassword(boolean status, String userName) {
+		if (status) {
+			isFirstTime=true;
+			title.setVisible(true);
+			title.setText("CREATE YOUR PASSWORD:");
+			userNameField.setValue(userName);
+			passWord.setValue("");
+			passWord.setPlaceholder("New password");
+			widgetList.add(confirmPassWord);
+			loginButton.setText("Save");
+		} else {
+			isFirstTime=false;
+			title.setVisible(false);
+			userNameField.setPlaceholder("UserName");
+			passWord.setPlaceholder("Password");
+			widgetList.remove(confirmPassWord);
+			loginButton.setText("LOGIN");
+		}
+	}
+
+	@Override
+	public String getconfirmPassword() {
+		return confirmPassWord.getValue();
+	}
 
 }

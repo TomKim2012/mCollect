@@ -144,7 +144,7 @@ public class PioneerAppEntryPoint implements EntryPoint {
 			public void onUncaughtException(Throwable e) {
 				MyDialogs
 						.alert("Problem",
-								"The App encountered a Problem. Restart and report to Administrator");
+								"Oops something went wrong. Notify Administrator");
 
 				consoleLog("Error::" + "Message" + e.getMessage()+"Stack Trace::"
 						+ e.getStackTrace() + "Localised Message"

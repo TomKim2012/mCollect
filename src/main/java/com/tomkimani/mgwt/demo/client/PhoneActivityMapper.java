@@ -60,7 +60,7 @@ public class PhoneActivityMapper implements ActivityMapper {
 		}
 		if(place instanceof SettingsPlace){
 			if(!LoginActivity.loggedUserGroup.equals("Admin")){
-				MyDialogs.alert("Not Allowed", "The Settings page is for Administrator.");
+				MyDialogs.alert("Not Allowed", "This page is for the Supervisor.");
 				return new DashboardActivity(clientFactory);
 			}
 			return new SettingsActivity(clientFactory);
