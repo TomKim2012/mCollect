@@ -20,7 +20,7 @@ import com.googlecode.mgwt.ui.client.widget.ScrollPanel;
 import com.googlecode.mgwt.ui.client.widget.WidgetList;
 import com.tomkimani.mgwt.demo.client.base.BaseView;
 import com.tomkimani.mgwt.demo.client.login.LoginActivity;
-import com.tomkimani.mgwt.demo.client.login.LoginActivity.User;
+import com.tomkimani.mgwt.demo.client.login.User;
 import com.tomkimani.mgwt.demo.client.settings.SettingsActivity.Allocation;
 import com.tomkimani.mgwt.demo.client.settings.SettingsActivity.ISettingsView;
 

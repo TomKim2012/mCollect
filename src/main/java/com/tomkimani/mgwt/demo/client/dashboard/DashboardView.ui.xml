@@ -12,7 +12,6 @@
 			<g:VerticalPanel ui:field="vPanel" verticalAlignment="ALIGN_BOTTOM" spacing="5">
 				<g:HTMLPanel ui:field="divUser">
 					<g:InlineLabel ui:field="spnUserName"></g:InlineLabel>
-					
 					<g:InlineLabel ui:field="spnSync"></g:InlineLabel>
 				</g:HTMLPanel>
 				<g:HorizontalPanel>

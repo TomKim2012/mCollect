@@ -1,7 +1,22 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-    xmlns:m="urn:import:com.googlecode.mgwt.ui.client.widget"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<g:HTMLPanel>
-	</g:HTMLPanel>
+	xmlns:m="urn:import:com.googlecode.mgwt.ui.client.widget" xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<m:LayoutPanel ui:field="mLayoutPanel">
+		<g:Image ui:field="imgLogo"></g:Image>
+
+		<m:LayoutPanel ui:field="divAllocation">
+			<g:VerticalPanel ui:field="divAlert" styleName="mobile-container">
+				<g:HTML styleName="bold helper-font-18 underline">Allocation Request</g:HTML>
+				<g:HTML styleName="hide">
+					<i class="icon-warning-sign helper-font-24"></i>
+				</g:HTML>
+				<g:HTML ui:field="spnLabel" styleName="alert alert-danger">
+				</g:HTML>
+			</g:VerticalPanel>
+
+			<m:Button text="Request Allocation" ui:field="aAllocation"
+				confirm="true">
+			</m:Button>
+		</m:LayoutPanel>
+	</m:LayoutPanel>
 </ui:UiBinder> 

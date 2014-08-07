@@ -117,13 +117,25 @@ public class ContactActivity extends BaseActivity {
 								+ contacts.length());
 				display.showBusy(false);
 				customerList = new LinkedList<Customer>();
+				
+				if (contacts.length() == 0) {
+					display.showError(true);
+					return;
+				}
+
 
 				int length = contacts.length() > 50 ? 50 : contacts.length();
 
 				for (int i = 0; i < length; i++) {
-
+					
+					PioneerAppEntryPoint
+					.consoleLog("Started Looping "
+							+ contacts.length());
 					if (contacts.get(i).getNickName().contains("/")) {
-
+						PioneerAppEntryPoint
+						.consoleLog("Contact contains / "
+								+ contacts.length());
+						
 						Customer cust = makeCustomer();
 						if (contacts.get(i).getName() != null) {
 							title = contacts.get(i).getName()
@@ -152,22 +164,24 @@ public class ContactActivity extends BaseActivity {
 									.get(i).getNickName() : null;
 							cust.setCustomerId(nickName);
 						}
-						
+						cust.setCustomerId(nickName);
 						if (contacts.get(i).getPhoneNumbers().length() > 0) {
 							phone = contacts.get(i).getPhoneNumbers().get(0)
 									.getValue();
+							
 							cust.setMobileNo(phone);
 						}
 						
-						if(cust.getCustomerId()!=null){
-						 customerList.add(cust);
+						PioneerAppEntryPoint
+						.consoleLog("Value of CustomerId >>>>"+cust.getCustomerId());
+						
+						if(cust.getCustomerId()!=""){
+							PioneerAppEntryPoint
+							.consoleLog("Customer Id is not null., inserting"+cust.getCustomerId());
+							customerList.add(cust);
 						}
 					}
 
-				}
-
-				if (contacts.length() == 0) {
-					display.showError(true);
 				}
 
 				display.display(customerList);

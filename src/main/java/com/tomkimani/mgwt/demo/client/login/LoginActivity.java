@@ -59,6 +59,10 @@ public class LoginActivity extends MGWTAbstractActivity {
 		void showUpdatePassword(boolean status, String userName);
 
 		String getconfirmPassword();
+
+		void showAllocationWidget(boolean show, String allocationMessage);
+
+		HasTapHandlers getAllocationButton();
 	}
 
 	public LoginActivity(ClientFactory factory) {
@@ -77,42 +81,49 @@ public class LoginActivity extends MGWTAbstractActivity {
 		view.showUpdatePassword(false, null);
 
 		view.getServerAddress().setValue(MyRequestBuilder.serverAddress);
+		
+		addHandlerRegistration(view.getAllocationButton().addTapHandler(new TapHandler() {
+			@Override
+			public void onTap(TapEvent event) {
+				
+			}
+		}));
 
 		// Add Tap Handler for Login
 		addHandlerRegistration(view.getLoginButton().addTapHandler(
 				new TapHandler() {
 
+					private String confirmPassword;
 					@Override
 					public void onTap(TapEvent event) {
 						String userName = view.getuserName();
 						String password = view.getpassword();
 						String imeiCode = PioneerAppEntryPoint.deviceImei;
 
+						if (password.isEmpty()) {
+							showEmptyFieldsError();
+							return;
+						}
+
+						/*
+						 * First Time Login - Importing users from their Core
+						 * System
+						 */
 						if (LoginView.isFirstTime) {
-							String confirmPassword = view.getconfirmPassword();
-							
-							if ((password.isEmpty()) && (confirmPassword.isEmpty())) {
-								view.getIssuesArea().setText(
-										"Please Fill In the Fields");
-								view.getIssuesArea().setVisible(true);
+							if (confirmPassword.isEmpty()) {
+								showEmptyFieldsError();
 								return;
 							}
-							
+							confirmPassword = view.getconfirmPassword();
 							if (password.equals(confirmPassword)) {
-								performPasswordUpdate(confirmPassword,imeiCode);
+								performPasswordUpdate(confirmPassword, imeiCode);
 							} else {
 								view.getIssuesArea().setText(
 										"Passwords don't Match");
 								view.getIssuesArea().setVisible(true);
 							}
-						}
-
-						if ((!userName.isEmpty()) && (!password.isEmpty())) {
-							performLogin(userName, password, imeiCode);
 						} else {
-							view.getIssuesArea().setText(
-									"Please Fill In the Fields");
-							view.getIssuesArea().setVisible(true);
+							performLogin(userName, password, imeiCode);
 						}
 					}
 				}));
@@ -147,6 +158,14 @@ public class LoginActivity extends MGWTAbstractActivity {
 
 	}
 
+	protected void showEmptyFieldsError() {
+		view.getIssuesArea().setText("Please Fill In the Fields");
+		view.getIssuesArea().setVisible(true);
+	}
+
+	/*
+	 * This is done for users from the core system Updating user password
+	 */
 	protected void performPasswordUpdate(String password, String imeiCode) {
 		String customUrl = "updatePassword";
 
@@ -228,26 +247,31 @@ public class LoginActivity extends MGWTAbstractActivity {
 								Response response) {
 							view.showBusy(false);
 							if (200 == response.getStatusCode()) {
-								PioneerAppEntryPoint.consoleLog(response.getText());
+
+								PioneerAppEntryPoint.consoleLog(response
+										.getText());
 								User loggedUser = deserializeFromJson(response
 										.getText());
-								if (loggedUser.getAuthorize()) {
+								loggedUserGroup = loggedUser.getGroup();
+								loggedFullNames = loggedUser.getFirstName();
+								
 
+								if (loggedUser.getAuthorize()) {
 									loggedUserId = loggedUser.getUserId();
 									loggedUserName = loggedUser.getUserName();
-									
+
 									if (loggedUser.getFirstTime()) {
 										view.showUpdatePassword(true,
 												loggedUser.getUserName());
 										return;
+									} else if (!loggedUser.getisAllocated()) {
+										String message = "Hi "+loggedFullNames+
+														 ", You have not been allocated the device.Request for allocation";
+										view.showAllocationWidget(true,message);
+									} else {
+										factory.getPlaceController().goTo(
+												new DashboardPlace());
 									}
-
-									loggedUserGroup = loggedUser.getGroup();
-									loggedFullNames = loggedUser.getFirstName();
-
-									factory.getPlaceController().goTo(
-											new DashboardPlace());
-
 								} else {
 									view.getIssuesArea().setText(
 											loggedUser.getError());
@@ -267,24 +291,6 @@ public class LoginActivity extends MGWTAbstractActivity {
 					MyDialogs.NETWORK_ERROR_MESSAGE, null);
 		}
 
-	}
-
-	public interface User {
-		String getUserId();
-
-		String getGroup();
-
-		String getFirstName();
-
-		String getLastName();
-
-		String getUserName();
-
-		Boolean getAuthorize();
-
-		Boolean getFirstTime();
-
-		String getError();
 	}
 
 	User makeUser() {

@@ -40,7 +40,6 @@ import com.tomkimani.mgwt.demo.client.places.TransactionsPlace;
 
 public class DashboardActivity extends BaseActivity {
 	private static boolean hasSynchronised = false;
-	// TransactionsActivity transaction= new TransactionsActivity(factory);
 	private final PhoneGap phoneGap;
 	private MyBeanFactory beanFactory;
 	private IDashboardView view;

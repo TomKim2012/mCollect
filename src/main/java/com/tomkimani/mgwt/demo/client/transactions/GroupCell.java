@@ -9,28 +9,21 @@ public interface GroupCell {
 	
 	public class Header {
 		private final Date date;
-
 		public Header(Date date) {
 			this.date = date;
-
 		}
-
 		public Date getDate() {
 			return date;
 		}
-
 		public String getDateStr() {
 			return DateTimeFormat.getFormat("EEEE,dd/MM/yyyy").format(getDate());
 		}
-		
 		public String getDateTitle(){
 			return DateTimeFormat.getFormat("EEEE").format(getDate());
 		}
-
 	}
 
 	public class Content {
-		
 		private Double amount;
 		private String transactionType;
 		private String transactionTime;

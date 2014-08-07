@@ -191,7 +191,8 @@ public class TransactionsActivity extends BaseActivity {
 											.getTransactionDate()));
 								}
 								if (previousDate.equals(dtf.parse(trx
-										.getTransactionDate()))) {
+										.getTransactionDate()))) 
+								{
 									contentList.add(new Content(index, trx
 											.getTransactionType(), Double
 											.parseDouble(trx
@@ -206,8 +207,7 @@ public class TransactionsActivity extends BaseActivity {
 									contentList.clear();
 									contentList.add(new Content(index, trx
 											.getTransactionType(), Double
-											.parseDouble(trx
-													.getTransactionAmount()),
+											.parseDouble(trx.getTransactionAmount()),
 											trx.getTransactionTime()));
 								}
 								previousDate = dtf.parse(trx
@@ -248,7 +248,6 @@ public class TransactionsActivity extends BaseActivity {
 		List<Content> content2 = new ArrayList<GroupCell.Content>();
 		for (Content cnt : contentList) {
 			content2.add(cnt);
-			System.out.println(cnt.getAmount());
 		}
 		cellGroup = new StandardCellGroup<Header, Content>("", header, content2);
 		CellgroupList.add(cellGroup);

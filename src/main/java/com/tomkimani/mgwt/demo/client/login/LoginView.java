@@ -7,12 +7,11 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
-import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
-import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
 import com.googlecode.mgwt.ui.client.widget.Button;
 import com.googlecode.mgwt.ui.client.widget.LayoutPanel;
 import com.googlecode.mgwt.ui.client.widget.MListBox;
@@ -21,7 +20,6 @@ import com.googlecode.mgwt.ui.client.widget.ProgressIndicator;
 import com.googlecode.mgwt.ui.client.widget.WidgetList;
 import com.tomkimani.mgwt.demo.client.css.LogoBundle;
 import com.tomkimani.mgwt.demo.client.login.LoginActivity.ILoginView;
-import com.tomkimani.mgwt.demo.client.ui.IconButton;
 import com.tomkimani.mgwt.demo.client.ui.PasswordField;
 import com.tomkimani.mgwt.demo.client.ui.TextField;
 
@@ -33,7 +31,6 @@ public class LoginView implements ILoginView {
 	interface LoginViewUiBinder extends UiBinder<Widget, LoginView> {
 	}
 
-	LayoutPanel LayoutPanel;
 	WidgetList widgetList;
 	Button loginButton;
 	private HTML IssuesArea;
@@ -44,29 +41,56 @@ public class LoginView implements ILoginView {
 	private WidgetList ipConfigList;
 	private MListBox mListBox;
 	private Button saveButton;
-	private IconButton ipButton;
 	private PasswordField confirmPassWord;
 	private HTML title;
 	
+	@UiField LayoutPanel mLayoutPanel;
+	@UiField LayoutPanel divAllocation;
+	@UiField HTML spnLabel;
+	@UiField Button aAllocation;
+	@UiField Image imgLogo;
+	
 	public static Boolean isFirstTime = false;
-
-	// private final Widget widget;
-
+	
+	private final Widget widget;
+	
 	public LoginView() {
-		// widget = uiBinder.createAndBindUi(this);
+		widget = uiBinder.createAndBindUi(this);
+		initWidgets();
+		showAllocationWidget(false,null);
+	}
+	
+	
+	public void showAllocationWidget(boolean show, String allocationMessage) {
+		if(show){
+			loginButton.setVisible(false);
+			widgetList.setVisible(false);
+			divAllocation.setVisible(true);
+			setMessage(allocationMessage);
+		}else{
+			loginButton.setVisible(true);
+			widgetList.setVisible(true);
+			divAllocation.setVisible(false);
+		}
+	}
+
+
+	private void setMessage(String allocationMessage) {
+		spnLabel.setText(allocationMessage);
+	}
+
+
+	private void initWidgets(){
 		widgetList = new WidgetList();
 
 		ipConfigList = new WidgetList();
-		LayoutPanel = new LayoutPanel();
 		title = new HTML();
 		IssuesArea = new HTML();
 		loginButton = new Button("LOGIN");
-		ipButton = new IconButton("icon-cogs", null);
 
-		// Logo
-		Image logo = new Image(LogoBundle.INSTANCE.logo());
-		logo.getElement().getStyle().setMarginLeft(20.0, Unit.PCT);
-		LayoutPanel.add(logo);
+		String imagePath = LogoBundle.INSTANCE.logo().getSafeUri().asString();		
+		imgLogo.setUrl(imagePath);
+		imgLogo.getElement().getStyle().setMarginLeft(20.0, Unit.PCT);
 
 		// UserName And Password TexFields
 		widgetList.setRound(true);
@@ -79,30 +103,8 @@ public class LoginView implements ILoginView {
 		// Ipconfig List
 		ipConfigList.setRound(true);
 		ipConfigList.setVisible(false);
-		// LayoutPanel.add(new HTML("Set the Ip-Address"));
-		ipButton.setVisible(false);
-		ipButton.getElement().getStyle().clearWidth();
-		ipButton.setWidth("8%");
-		ipButton.removeMinWidth();
-		ipButton.getElement().getStyle().setMarginTop(30, Unit.PCT);
+		// mLayoutPanel.add(new HTML("Set the Ip-Address"));
 
-		ipButton.addTapHandler(new TapHandler() {
-
-			private boolean isShown = true;
-
-			@Override
-			public void onTap(TapEvent event) {
-				if (isShown) {
-					showIpChange(true);
-					ipButton.setIcon("icon-arrow-left");
-					isShown = false;
-				} else {
-					showIpChange(false);
-					ipButton.setIcon(" icon-cogs");
-					isShown = true;
-				}
-			}
-		});
 
 		mListBox = new MListBox();
 		mListBox.addItem("Cloud Server", "197.248.2.44:8030");
@@ -131,37 +133,31 @@ public class LoginView implements ILoginView {
 		title.getElement().getStyle().setMarginTop(5.0, Unit.PCT);
 		title.getElement().getStyle().setTextDecoration(TextDecoration.UNDERLINE);
 		title.getElement().getStyle().setFontWeight(FontWeight.BOLD);
-		LayoutPanel.add(title);
+		mLayoutPanel.add(title);
 		
 		
 		// Layout Panel Items
-		LayoutPanel.add(widgetList);
-		LayoutPanel.add(ipConfigList);
+		mLayoutPanel.add(widgetList);
+		mLayoutPanel.add(ipConfigList);
 
 		// Progress Indicator
 		progressIndicator = new ProgressIndicator();
 		progressIndicator.getElement().setAttribute("style",
 				"margin:auto; margin-top: 50px");
 		progressIndicator.setVisible(false);
-		LayoutPanel.add(progressIndicator);
+		mLayoutPanel.add(progressIndicator);
 		
 		// IssuesArea
 		IssuesArea.getElement().getStyle().setColor("Red");
 		IssuesArea.setVisible(false);
 		IssuesArea.getElement().getStyle().setMarginLeft(20.0, Unit.PCT);
-		LayoutPanel.add(IssuesArea);
+		mLayoutPanel.add(IssuesArea);
 
 		// LoginButton
 		loginButton.setConfirm(true);
-		LayoutPanel.add(loginButton);
-		LayoutPanel.add(saveButton);
-		LayoutPanel.add(ipButton);
-
-	}
-
-	@Override
-	public Widget asWidget() {
-		return LayoutPanel;
+		mLayoutPanel.add(loginButton);
+		mLayoutPanel.add(saveButton);
+		
 	}
 
 	public HasTapHandlers getLoginButton() {
@@ -233,10 +229,19 @@ public class LoginView implements ILoginView {
 			loginButton.setText("LOGIN");
 		}
 	}
-
+	
+	public HasTapHandlers getAllocationButton(){
+		return aAllocation;
+	}
 	@Override
 	public String getconfirmPassword() {
 		return confirmPassWord.getValue();
+	}
+
+
+	@Override
+	public Widget asWidget() {
+		return widget;
 	}
 
 }

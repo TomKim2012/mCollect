@@ -30,7 +30,7 @@ import com.tomkimani.mgwt.demo.client.MyRequestBuilder;
 import com.tomkimani.mgwt.demo.client.MyRequestCallback;
 import com.tomkimani.mgwt.demo.client.PioneerAppEntryPoint;
 import com.tomkimani.mgwt.demo.client.base.BaseActivity;
-import com.tomkimani.mgwt.demo.client.login.LoginActivity.User;
+import com.tomkimani.mgwt.demo.client.login.User;
 import com.tomkimani.mgwt.demo.client.places.DashboardPlace;
 
 public class SettingsActivity extends BaseActivity {
