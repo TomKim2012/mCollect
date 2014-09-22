@@ -157,7 +157,6 @@ public class LoginView implements ILoginView {
 		loginButton.setConfirm(true);
 		mLayoutPanel.add(loginButton);
 		mLayoutPanel.add(saveButton);
-		
 	}
 
 	public HasTapHandlers getLoginButton() {

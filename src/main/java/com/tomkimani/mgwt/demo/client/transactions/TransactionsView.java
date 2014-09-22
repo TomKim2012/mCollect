@@ -30,12 +30,9 @@ public class TransactionsView extends BaseView implements ITransactionsView{
 	private HTML dateTime;
 	private ScrollPanel scroll;
 	
-	//private final Widget widget;
 	
 	public TransactionsView() {
 		super();
-		
-		//widget = uiBinder.createAndBindUi(this);
 		
 		headerPanel.setCenter("My Transactions");
 		
@@ -116,7 +113,7 @@ public class TransactionsView extends BaseView implements ITransactionsView{
 		public void render(SafeHtmlBuilder safeHtmlBuilder, Content model) {
 			
 			safeHtmlBuilder.appendEscaped(  model.getTransactionTime()+ " : "+
-											model.getTransactionType()+" -Ksh "+
+											model.getCustomerNames()+" -Ksh "+
 										    model.getAmount());
 		}
 

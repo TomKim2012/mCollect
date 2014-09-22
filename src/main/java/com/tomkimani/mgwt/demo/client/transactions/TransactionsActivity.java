@@ -131,7 +131,7 @@ public class TransactionsActivity extends BaseActivity {
 
 		JsonpRequestBuilder builder = new JsonpRequestBuilder();
 		try {
-			builder.setTimeout(10000);
+			builder.setTimeout(60000);
 			builder.requestObject(MyRequestBuilder.serverUrl + url,
 					new AsyncCallback<JsArray<MyTransaction>>() {
 						@Override
@@ -190,25 +190,22 @@ public class TransactionsActivity extends BaseActivity {
 									header = new Header(dtf.parse(trx
 											.getTransactionDate()));
 								}
+								Double transactionAmount = null;
 								if (previousDate.equals(dtf.parse(trx
 										.getTransactionDate()))) 
 								{
+									transactionAmount = Double.parseDouble(trx.getTransactionAmount());
 									contentList.add(new Content(index, trx
-											.getTransactionType(), Double
-											.parseDouble(trx
-													.getTransactionAmount()),
-											trx.getTransactionTime()));
+											.getTransactionType(),transactionAmount,
+											trx.getTransactionTime(),trx.getCustNames()));
 								} else {
 									formCellgroup(header, contentList);
 									header = new Header(dtf.parse(trx
 											.getTransactionDate()));
-									// System.err.println("Header<<"+
-									// dtf.parse(trx.getTransactionDate()));
 									contentList.clear();
 									contentList.add(new Content(index, trx
-											.getTransactionType(), Double
-											.parseDouble(trx.getTransactionAmount()),
-											trx.getTransactionTime()));
+											.getTransactionType(),transactionAmount,
+											trx.getTransactionTime(), trx.getCustNames()));
 								}
 								previousDate = dtf.parse(trx
 										.getTransactionDate());

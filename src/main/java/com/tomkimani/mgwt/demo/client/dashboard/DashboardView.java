@@ -46,7 +46,7 @@ public class DashboardView extends BaseView implements IDashboardView{
 		spnUserName.getElement().getStyle().setMargin(5.0, Unit.PCT);
 		spnUserName.getElement().getStyle().setColor("Blue");
 		
-		spnSync.setText("Checking..");
+		//spnSync.setText("Checking..");
 		spnSync.getElement().getStyle().setFloat(Float.RIGHT);
 		spnSync.getElement().getStyle().setColor("Grey");
 		

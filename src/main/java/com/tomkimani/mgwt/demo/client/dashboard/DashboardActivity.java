@@ -94,7 +94,7 @@ public class DashboardActivity extends BaseActivity {
 				}));
 		panel.setWidget(view);
 		
-		if(LoginActivity.loggedUserGroup.equals("Admin")){
+		/*if(LoginActivity.loggedUserGroup.equals("Admin")){
 			if (!hasSynchronised) {
 				SynchronizeContacts();
 			}else{
@@ -104,7 +104,8 @@ public class DashboardActivity extends BaseActivity {
 		}else{
 			//No status
 			view.setSyncStatus("");
-		}
+		}*/
+		
 	}
 
 	public void SynchronizeContacts() {

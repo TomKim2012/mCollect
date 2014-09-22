@@ -14,7 +14,6 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.event.shared.EventBus;
 import com.googlecode.gwtphonegap.client.PhoneGap;
 import com.googlecode.gwtphonegap.client.contacts.Contact;
-import com.googlecode.gwtphonegap.client.contacts.ContactName;
 import com.googlecode.gwtphonegap.client.notification.AlertCallback;
 import com.googlecode.gwtphonegap.client.notification.ConfirmCallback;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;

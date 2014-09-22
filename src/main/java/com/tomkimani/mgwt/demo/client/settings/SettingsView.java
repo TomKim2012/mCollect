@@ -79,6 +79,7 @@ public class SettingsView extends BaseView implements ISettingsView{
 		userSettingTitle.getElement().getStyle().setFontWeight(FontWeight.BOLD);
 	   
 		
+		//Device Setting List
 		LayoutPanel.add(deviceSettingList);
 		LayoutPanel.add(userSettingTitle);
 		LayoutPanel.add(userSettingList);

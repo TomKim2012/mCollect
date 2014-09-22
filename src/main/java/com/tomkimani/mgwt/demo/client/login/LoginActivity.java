@@ -162,6 +162,11 @@ public class LoginActivity extends MGWTAbstractActivity {
 		view.getIssuesArea().setText("Please Fill In the Fields");
 		view.getIssuesArea().setVisible(true);
 	}
+	
+	private void performAllocationRequest(){
+		String customUrl = "preAllocation";
+		
+	}
 
 	/*
 	 * This is done for users from the core system Updating user password
